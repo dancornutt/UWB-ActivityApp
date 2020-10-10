@@ -2,7 +2,6 @@
 
 Project file structure:
   * index.html
-  * css (folder)
+  * assets (folder)
     * style.css
-  * js (folder)
     * script.js
