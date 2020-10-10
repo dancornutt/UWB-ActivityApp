@@ -1,5 +1,6 @@
 .DS_Store
 .vscode
+my-ignore
 
 # Logs
 logs
