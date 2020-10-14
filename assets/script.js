@@ -57,7 +57,8 @@ function getLocation() {
 
   //Click Event Handler while searching for a specific location
 
-  $("#click-button").on("click",function(){
+  $("#submit").on("click",function(event){
+    event.preventDefault();
     let cityInput = $("#location").val();
     getTempData(cityInput);
 
