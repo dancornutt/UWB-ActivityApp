@@ -18,7 +18,6 @@ function getLocation() {
     var lon = position.coords.longitude;
     console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
     displayCityName(lat,lon);
-    getEvents();
   }
 
   function displayCityName(lat,lon)
@@ -28,9 +27,6 @@ function getLocation() {
           url: queryURL,
           method:"GET"
       }).then(function(response){
-          console.log(response.name);
-          console.log(response);
-          console.log(response.weather[0].icon);
           var imageSrc = " http://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
           $("#weather-icon").attr("src",imageSrc);
           $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
@@ -60,14 +56,5 @@ function getLocation() {
     return (formattedDate);
   }
 
-function getEvents(){
-    var querystr = "https://www.mapquestapi.com/search/v4/place?key=93hIxfKPXiCmgbqkszFWPTg0QKE5OotU&maxMatches=10&location=-121.8936832,47.5201536&category=sic:799601&sort=distance";
-    $.ajax({
-        method:"GET",
-        url:querystr
-    }).then(function(response){
-        console.log(response);
-    })
-}
    getLocation();
    
