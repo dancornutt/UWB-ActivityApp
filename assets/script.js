@@ -1,10 +1,7 @@
-<<<<<<< HEAD
+var myEvents;
+var today = moment().format("YYYY-MM-DD")
+var tomorrow = moment().add(1,'days').format("YYYY-MM-DD")
 
-//From our class activities
-=======
-// get the current location 
-
->>>>>>> develop
 function getLocation() {
     // Make sure browser supports this feature
     if (navigator.geolocation) {
@@ -22,58 +19,40 @@ function getLocation() {
     var lat = position.coords.latitude;
     var lon = position.coords.longitude;
     console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
-<<<<<<< HEAD
     getEvents(getGeoHash(lat, lon));
-
-
+    displayCityName(lat,lon);
   }
 
   function getGeoHash(lat, lon) {
     return Geohash.encode(lat, lon, 6)
   }
 
-  function getEvents(geohash) {
-
-    // $('#events-panel').show();
-    // $('#attraction-panel').hide();
-  
-    // if (page < 0) {
-    //   page = 0;
-    //   return;
-    // }
-    // if (page > 0) {
-    //   if (page > getEvents.json.page.totalPages-1) {
-    //     page=0;
-    //   }
-    // }
-    
+  function getEvents(geoHash) {
+    console.log(today, tomorrow)
     $.ajax({
       type:"GET",
-      url:"https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=2020-10-20T15:00:00Z&endDateTime=2020-10-31T15:00:00Z&geoPoint=c22yrx&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A",
-      // url:"https://app.ticketmaster.com/discovery/v2/events.json?geoPoint=c22yrx&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A",
-      
+      url:`https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${tomorrow}T00:00:00Z&geoPoint=${geoHash}&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
       async:true,
       dataType: "json",
-      success: function(json) {
-            // getEvents.json = json;
-            // showEvents(json);
-            console.log("Events near seattle: ", json);
-           },
+      success: function(json){
+        updateEventsUI([...json._embedded.events])
+      },
       error: function(xhr, status, err) {
             console.log(err);
            }
     });
   }
-console.log("Seattle geohash:", Geohash.encode(47.546368, -122.3622656, 6));
-//Seattle geohash: c22yrx
 
-getLocation();
-getEvents("c22yrx");
-=======
-    displayCityName(lat,lon);
+  function updateEventsUI(data_arr){
+    $("#events").empty();
+    data_arr.forEach(element => {
+      let newEvent = $("<li>")
+        .html(`<a href=${element.url}>${element.name}</a>`);
+      $("#events").append(newEvent);
+    });
   }
 
-  function displayCityName(lat,lon)
+  function displayCityName(lat,lon){
   {
       let queryURL = "http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
       $.ajax({
@@ -108,7 +87,7 @@ getEvents("c22yrx");
     var formattedDate = day + '-' + month + '-' + year;
     return (formattedDate);
   }
+}
 
-   getLocation();
-   
->>>>>>> develop
+getLocation();
+
