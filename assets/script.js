@@ -16,7 +16,6 @@ function getLocation() {
     // Grab coordinates from the given object
     var lat = position.coords.latitude;
     var lon = position.coords.longitude;
-    console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
     displayCityName(lat,lon);
   }
 
@@ -29,13 +28,13 @@ function getLocation() {
       }).then(function(response){
           var imageSrc = " http://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
           $("#weather-icon").attr("src",imageSrc);
+          $("#weather").html("Weather Conditions: "+ response.weather[0].main);
           $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
           $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-          $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
-         
+          $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");   
       })
   }
-
+  
   //temparature conversion function
 
   function convertKtoF(tempInKelvin) {
