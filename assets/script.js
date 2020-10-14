@@ -55,5 +55,31 @@ function getLocation() {
     return (formattedDate);
   }
 
+  //Click Event Handler while searching for a specific location
+
+  $("#click-button").on("click",function(){
+    let cityInput = $("#location").val();
+    getTempData(cityInput);
+
+  })
+
+  //Temparature results of a specific city
+
+  function getTempData(cityInput){
+
+    let TempapiURL = "http://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+    $.ajax({
+      method:"GET",
+      url: TempapiURL
+    }).then(function(response){
+      var imageSrc = " http://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
+      $("#weather-icon").attr("src",imageSrc);
+      $("#weather").html("Weather Conditions: "+ response.weather[0].main);
+      $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
+      $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
+      $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")"); 
+    })
+  }
+
    getLocation();
    
