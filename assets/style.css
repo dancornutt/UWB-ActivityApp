@@ -4,7 +4,7 @@ body {
     background-size: cover;
    }
 
-.jumbotron {
+.jumbotron , .card-footer ,#submit{
     background-color: #ca4820 !important;    
 }
 
