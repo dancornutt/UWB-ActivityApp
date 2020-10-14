@@ -7,7 +7,6 @@
     <title>!Bored</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <!-- <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css"
         integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous">
@@ -22,24 +21,29 @@
             <strong>!Bored</strong>
         </h1>
     </div>
-    <div class="ui text container" id="weather-dashboard">
-        <form class="ui form form-inline ml-5">
-            <div class="field ml-5">
-                Location: <input id="location" type="text" placeholder="City">
-            </div>
-            <div class="field ml-5">
-                Date: <input id="date" type="text" placeholder="mm/dd/yyyy">
-            </div>
 
-            <button id="submit" class="ui button  ml-2" type="submit">Submit<button>
-        </form>
-        <div class="ui segments">
+    <div class="ui text container" id="search-box">
+        <div class="ui large form">
+            <div class="two fields">
+                <div class="required field ">
+                    <label for="location">Location:</label>
+                    <input id="location" type="text" placeholder="City">
+                </div>
+                <div class="required field ">
+                    <label for="date">Date:</label>
+                    <input id="date" type="date">
+                </div>
+            </div>
+            <div id="submit" class="ui tiny button">Submit
+            </div>
+        </div>
+        <div class="ui  segments">
             <div class="ui segment text-center">
                 <h1 id="location-and-date">Seattle, WA 10.12.20</h1>
                 <img id="weather-icon" class="ui avatar image" src="https://via.placeholder.com/150">
 
                 <div class="ui segments mt-3">
-                    <div class="ui segment">
+                    <div class="ui raised segment">
                         <p class="text-center" id="weather">Weather Conditions:</p>
                         <p class="text-center" id="temp">Temperature:</p>
                         <p class="text-center" id="wind">Wind Speed:</p>
@@ -69,7 +73,6 @@
                                 <li>Example Attraction</li>
                             </ul>
                         </div>
-
                     </div>
                 </div>
             </div>
