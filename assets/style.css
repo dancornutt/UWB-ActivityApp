@@ -1,0 +1,34 @@
+body {
+    background-image: url("https://images.pexels.com/photos/62693/pexels-photo-62693.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+    background-color: #cccccc;
+    background-size: cover;
+   }
+
+.jumbotron {
+    background-color: #ca4820 !important;    
+}
+
+h1{
+    font-family: 'Major Mono Display', monospace;
+}
+
+p{
+    font-family: 'Open Sans', sans-serif;
+}
+
+li{
+    font-family: 'Open Sans', sans-serif;
+}
+
+h3{
+    font-family: 'Major Mono Display', monospace;
+}
+
+.split{
+    width: 50% !important;
+}
+
+.avatar{
+    width: 100px !important;
+    height: 100px !important;
+}
