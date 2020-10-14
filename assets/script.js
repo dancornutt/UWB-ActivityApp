@@ -1,4 +1,6 @@
-// get the current location 
+var myEvents;
+var today = moment().format("YYYY-MM-DD")
+var tomorrow = moment().add(1,'days').format("YYYY-MM-DD")
 
 function getLocation() {
     // Make sure browser supports this feature
@@ -16,10 +18,41 @@ function getLocation() {
     // Grab coordinates from the given object
     var lat = position.coords.latitude;
     var lon = position.coords.longitude;
+    console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
+    getEvents(getGeoHash(lat, lon));
     displayCityName(lat,lon);
   }
 
-  function displayCityName(lat,lon)
+  function getGeoHash(lat, lon) {
+    return Geohash.encode(lat, lon, 6)
+  }
+
+  function getEvents(geoHash) {
+    console.log(today, tomorrow)
+    $.ajax({
+      type:"GET",
+      url:`https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${tomorrow}T00:00:00Z&geoPoint=${geoHash}&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
+      async:true,
+      dataType: "json",
+      success: function(json){
+        updateEventsUI([...json._embedded.events])
+      },
+      error: function(xhr, status, err) {
+            console.log(err);
+           }
+    });
+  }
+
+  function updateEventsUI(data_arr){
+    $("#events").empty();
+    data_arr.forEach(element => {
+      let newEvent = $("<li>")
+        .html(`<a href=${element.url}>${element.name}</a>`);
+      $("#events").append(newEvent);
+    });
+  }
+
+  function displayCityName(lat,lon){
   {
       let queryURL = "http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
       $.ajax({
@@ -54,7 +87,11 @@ function getLocation() {
     var formattedDate = day + '-' + month + '-' + year;
     return (formattedDate);
   }
+}
 
+getLocation();
+
+<<<<<<< HEAD
   //Click Event Handler while searching for a specific location
 
   $("#submit").on("click",function(event){
@@ -84,3 +121,5 @@ function getLocation() {
 
    getLocation();
    
+=======
+>>>>>>> develop
