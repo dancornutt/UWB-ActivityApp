@@ -83,7 +83,7 @@ function convertUnixtoDate(unixformat) {
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
 function getTempData(cityInput){
-  let TempapiURL = "http://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
     method:"GET",
     url: TempapiURL
