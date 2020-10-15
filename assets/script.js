@@ -1,6 +1,7 @@
 var myEvents;
 var today = moment().format("YYYY-MM-DD")
 var tomorrow = moment().add(1,'days').format("YYYY-MM-DD")
+var city = "";
 
 function getLocation() {
     // Make sure browser supports this feature
@@ -64,7 +65,9 @@ function getLocation() {
           $("#weather").html("Weather Conditions: "+ response.weather[0].main);
           $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
           $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-          $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");   
+          city = response.name
+          $("#location-and-date").html(city +"("+ convertUnixtoDate(response.dt)+")");
+          displayAttractions(city)   
       })
   }
   
@@ -91,3 +94,25 @@ function getLocation() {
 
 getLocation();
 
+function displayAttractions(city){
+  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=5&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
+  $.ajax({
+      url: attractionsQueryURL,
+      method:"GET"
+  }).then(function(response){
+    console.log(response)
+    $("#attractions").empty();
+    let attractions = response.results
+    console.log(attractions)
+    if (attractions === []){
+      let noAttraction = $("<li>").text("No attractions found at your location.")
+      $("#attractions").append(noAttraction)
+    } else {
+      attractions.forEach(element => {
+        let newAttraction = $("<li>")
+        newAttraction.text(element.name)
+        $("#attractions").append(newAttraction)
+      })
+    }
+  })
+}
