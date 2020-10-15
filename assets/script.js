@@ -55,7 +55,7 @@ function updateEventsUI(data_arr){
 
 //When current location is enabled on the browser
 function displayCityName(lat,lon) {
-  let queryURL = "http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  let queryURL = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
       url: queryURL,
       method:"GET"
@@ -95,7 +95,7 @@ function getTempData(cityInput){
 // Function to display Weather Information 
 function weatherInfo(response)
 {
-  var imageSrc = " http://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
+  var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
