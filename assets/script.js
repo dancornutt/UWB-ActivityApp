@@ -21,6 +21,7 @@ function showPosition(position) {
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
   displayCityName(lat,lon);
+  getEvents1();
 }
 
   function getGeoHash(lat, lon) {
@@ -118,6 +119,28 @@ function weatherInfo(response)
       $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
       $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
 }
+
+function getEvents1(){
+  var querystr = "http://www.mapquestapi.com/search/v4/place?key=93hIxfKPXiCmgbqkszFWPTg0QKE5OotU&maxMatches=10&location=-121.8936832,47.5201536&category=sic:799601&sort=distance";
+  $.ajax({
+      // method:"GET",
+//       headers: {
+        
+//         'Access-Control-Allow-Origin' : '*',
+//         'Access-Control-Allow-Origin': 'http://www.mapquestapi.com',
+// 'Access-Control-Allow-Headers': 'json'
+//     },
+//     crossDomain: true,
+//       url:querystr
+type:"GET",
+      url:querystr,
+      async:true,
+      dataType: "json",
+  }).then(function(response){
+      console.log(response);
+  })
+}
+
 
 
  getLocation();
