@@ -21,6 +21,7 @@ function showPosition(position) {
   var lon = position.coords.longitude;
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
+  displayAttractions(getGeoHash(lat, lon))
   displayCityName(lat,lon);
 }
 
@@ -134,7 +135,7 @@ function displayAttractions(city){
     $("#attractions").empty();
     let attractions = response.results
     console.log(attractions)
-    if (attractions === []){
+    if (attractions.length === 0){
       let noAttraction = $("<li>").text("No attractions found at your location.")
       $("#attractions").append(noAttraction)
     } else {
