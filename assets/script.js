@@ -2,7 +2,9 @@
 var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
-var maxDay = moment().add(29, 'd').format("YYYY-MM-DD")
+var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
+var outdoorActivities = ["Ride a bike", "Play hopskotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
+var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
 function limitCalendar(){
   $("#date").attr("max", maxDay)
@@ -152,8 +154,19 @@ function displayAttractions(city){
     let attractions = response.results
     console.log(attractions)
     if (attractions.length === 0){
-      let noAttraction = $("<li>").text("No attractions found at your location.")
+      let noAttraction = $("<li>").text("No city attractions found at your location. Try one of these:")
       $("#attractions").append(noAttraction)
+      if ($("#recommendation").text()==="outdoor"){
+        outdoorActivities.forEach(element => {
+        let outdoorActivityList = $("<li>").text(element)
+        $("#attractions").append(outdoorActivityList)
+        })
+      } else if ($("#recommendation").text()==="indoor"){
+        indoorActivities.forEach(element => {
+        let indoorActivityList = $("<li>").text(element)
+        $("#attractions").append(indoorActivityList)
+        })
+      }  
     } else {
       attractions.forEach(element => {
         let newAttraction = $("<li>")
