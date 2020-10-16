@@ -1,6 +1,6 @@
-var myEvents;
+// var myEvents;
 var today = moment().format("YYYY-MM-DD");
-var tomorrow = moment().add(1,'days').format("YYYY-MM-DD");
+var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
 
 function getLocation() {
@@ -43,6 +43,22 @@ function getEvents(geoHash) {
     });
   }
 
+  function getEventsCityDate(city) {
+    $.ajax({
+      type:"GET",
+      url:`https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${tomorrow}T00:00:00Z&city=[${city}]&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
+      async:true,
+      dataType: "json",
+      success: function(json){
+        console.log("From getEventsCityDate", json);
+        updateEventsUI([...json._embedded.events])
+      },
+      error: function(xhr, status, err) {
+            console.log(err);
+           }
+      });
+    }
+
 function updateEventsUI(data_arr){
   $("#events").empty();
   data_arr.forEach(element => {
@@ -55,7 +71,7 @@ function updateEventsUI(data_arr){
 
 //When current location is enabled on the browser
 function displayCityName(lat,lon) {
-  let queryURL = "http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  let queryURL = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
       url: queryURL,
       method:"GET"
@@ -67,6 +83,11 @@ function displayCityName(lat,lon) {
 //Temparature conversion function
 function convertKtoF(tempInKelvin) {
   return ((tempInKelvin - 273.15) * 9) / 5 + 32;
+}
+
+function updateWeek(date) {
+  this.today = date;
+  this.tomorrow = moment(date).add(7,'days').format("YYYY-MM-DD");
 }
 
 //Convert Unix format to Standard Date
@@ -95,7 +116,7 @@ function getTempData(cityInput){
 // Function to display Weather Information 
 function weatherInfo(response)
 {
-  var imageSrc = " http://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
+  var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
@@ -129,9 +150,11 @@ function displayAttractions(city){
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
   event.preventDefault();
-  let cityInput = $("#location").val();
-  console.log(cityInput);
+  let cityInput = $("#location").val().toLowerCase().trim();
   getTempData(cityInput);
+  updateWeek($("#date").val());
+  displayAttractions(cityInput);
+  getEventsCityDate(cityInput.toLowerCase())
 })
 
 getLocation();
