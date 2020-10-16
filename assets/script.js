@@ -31,8 +31,8 @@ function showPosition(position) {
   var lon = position.coords.longitude;
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
-  displayAttractions(getGeoHash(lat, lon))
   displayCityName(lat,lon);
+  displayAttractions(getGeoHash(lat, lon))
   getEvents1();
 }
 
