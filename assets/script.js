@@ -62,11 +62,14 @@ function getEvents(geoHash) {
 
 function updateEventsUI(data_arr){
   $("#events").empty();
-  data_arr.forEach(element => {
+
+  for (let i=0; i<10; i++) {
     let newEvent = $("<li>")
-      .html(`<a href=${element.url}>${element.name}</a>`);
+      .html(`<a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
     $("#events").append(newEvent);
-  });
+  }
+    
+  
 }
 
 
