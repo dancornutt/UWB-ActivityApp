@@ -123,10 +123,15 @@ function weatherInfo(response)
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
   $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
+  if(response.weather[0].main === "Clear" || response.weather[0].main === "Clouds"){
+    $("#recommendation").text("outdoor")
+  } else {
+    $("#recommendation").text("indoor")
+  }
 }
 
 function displayAttractions(city){
-  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=5&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
+  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=15&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
   $.ajax({
       url: attractionsQueryURL,
       method:"GET"
@@ -148,14 +153,23 @@ function displayAttractions(city){
   })
 }
 
+function toTitleCase(str) {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+}
+
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
   event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
   getTempData(cityInput);
   updateWeek($("#date").val());
-  displayAttractions(cityInput);
-  getEventsCityDate(cityInput.toLowerCase())
+  displayAttractions(toTitleCase(cityInput));
+  getEventsCityDate(cityInput)
 })
 
 getLocation();
