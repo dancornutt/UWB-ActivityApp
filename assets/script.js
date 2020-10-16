@@ -1,7 +1,17 @@
-// var myEvents;
+let favoriteEvents = {};
 var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
+
+function initialize() {
+  if (JSON.parse(localStorage.getItem("!Bored-Events") !== null)) {
+    this.favoriteEvents = {...JSON.parse(localStorage.getItem("!Bored-Events"))}
+  }
+}
+
+function updateFavorites() {
+  localStorage.setItem("!Bored-Events", JSON.stringify(this.favorites));
+}
 
 function getLocation() {
   // Make sure browser supports this feature
@@ -61,9 +71,15 @@ function getEvents(geoHash) {
 
 function updateEventsUI(data_arr){
   $("#events").empty();
-  data_arr.forEach(element => {
+  data_arr.forEach((element, index) => {
+    // console.log(element);
     let newEvent = $("<li>")
-      .html(`<a href=${element.url}>${element.name}</a>`);
+      .attr("data", `${index}`)
+      .html(`<a href=${element.url}>${element.dates.start.localDate}: ${element.name}</a>`);
+    let addEventBtn = $("<button>")
+      .attr("class", "btn btn-secondary btn-sm")
+      .html("<i class='far fa-heart'></i>");
+    newEvent.append(addEventBtn);
     $("#events").append(newEvent);
   });
 }
@@ -166,4 +182,41 @@ $("#submit").on("click",function(event){
   getEventsCityDate(cityInput)
 })
 
+//Click Event Handler on events
+$("#events").on("click",function(event){
+
+  console.log($(event.target).parent())
+  if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
+    $(event.target).parent().attr("class", "btn btn-primary btn-sm");
+    let id = $(event.target).parent().parent()[0].attributes[0].value;
+    let text = $(event.target).parent().parent()[0].innerText;
+    favoriteEvents[`${id}`] = text;
+    console.log(favoriteEvents);
+    saveFavoriteEvents();
+    }
+  })
+
+function updateFavoriteEventsUI() {
+  if (favoriteEvents) {
+    let keys = favoriteEvents.keys;
+    keys.forEach(element => {
+      //Add LI in favorites
+      //Update Item in list
+    });
+  }
+}
+
+function saveFavoriteEvents() {
+  localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
+  //Update UI
+}
+  // event.preventDefault();
+  // let cityInput = $("#location").val().toLowerCase().trim();
+  // getTempData(cityInput);
+  // updateWeek($("#date").val());
+  // displayAttractions(toTitleCase(cityInput));
+  // getEventsCityDate(cityInput)
+
+
+initialize();
 getLocation();
