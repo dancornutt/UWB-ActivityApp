@@ -86,8 +86,8 @@ function convertKtoF(tempInKelvin) {
 }
 
 function updateWeek(date) {
-  today = date;
-  tomorrow = moment(date).add(7,'days').format("YYYY-MM-DD");
+  this.today = date;
+  this.tomorrow = moment(date).add(7,'days').format("YYYY-MM-DD");
 }
 
 //Convert Unix format to Standard Date
