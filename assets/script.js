@@ -2,6 +2,14 @@
 var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
+var maxDay = moment().add(29, 'd').format("YYYY-MM-DD")
+
+function limitCalendar(){
+  $("#date").attr("max", maxDay)
+  $("#date").attr("min", today) 
+}
+
+limitCalendar()
 
 function getLocation() {
   // Make sure browser supports this feature
