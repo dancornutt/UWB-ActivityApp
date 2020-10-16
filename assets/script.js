@@ -63,11 +63,14 @@ function getEvents(geoHash) {
 
 function updateEventsUI(data_arr){
   $("#events").empty();
-  data_arr.forEach(element => {
+
+  for (let i=0; i<10; i++) {
     let newEvent = $("<li>")
-      .html(`<a href=${element.url}>${element.name}</a>`);
+      .html(`<a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
     $("#events").append(newEvent);
-  });
+  }
+    
+  
 }
 
 
@@ -78,12 +81,8 @@ function displayCityName(lat,lon) {
       url: queryURL,
       method:"GET"
   }).then(function(response){   
-    var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
-    $("#weather-icon").attr("src",imageSrc);
-    $("#weather").html("Weather Conditions: "+ response.weather[0].main);
-    $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
-    $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
     $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
+    WeatherInfo(response);
   })
 }
 
@@ -117,16 +116,28 @@ function getTempData(cityInput,dateInput){
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
+    WeatherInfo(response);
+  })
+}
+
+//Weather Info
+
+function WeatherInfo(response)
+{
+  var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-  })
+  if(response.weather[0].main === "Clear" || response.weather[0].main === "Clouds"){
+    $("#recommendation").text("outdoor")
+  } else {
+    $("#recommendation").text("indoor")
+  }
 }
 
 function displayAttractions(city){
-  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=5&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
+  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=15&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
   $.ajax({
       url: attractionsQueryURL,
       method:"GET"
