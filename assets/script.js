@@ -23,6 +23,7 @@ function showPosition(position) {
   getEvents(getGeoHash(lat, lon));
   displayAttractions(getGeoHash(lat, lon))
   displayCityName(lat,lon);
+  getEvents1();
 }
 
 function getGeoHash(lat, lon) {
@@ -80,7 +81,8 @@ function displayCityName(lat,lon) {
       url: queryURL,
       method:"GET"
   }).then(function(response){   
-      weatherInfo(response);
+    $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
+    WeatherInfo(response);
   })
 }
 
@@ -102,30 +104,31 @@ function convertUnixtoDate(unixformat) {
   var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
   var month = (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
   var year = date.getFullYear();
-  var formattedDate = day + '-' + month + '-' + year;
+  var formattedDate = year + '-' + month + '-' + day;
   return (formattedDate);
 }
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
-function getTempData(cityInput){
+function getTempData(cityInput,dateInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  $("#location-and-date").html(cityInput + "("+dateInput+")");
   $.ajax({
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    weatherInfo(response);
+    WeatherInfo(response);
   })
 }
 
-// Function to display Weather Information 
-function weatherInfo(response)
+//Weather Info
+
+function WeatherInfo(response)
 {
   var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-  $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
   if(response.weather[0].main === "Clear" || response.weather[0].main === "Clouds"){
     $("#recommendation").text("outdoor")
   } else {
@@ -167,12 +170,20 @@ function toTitleCase(str) {
 
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
-  event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
-  getTempData(cityInput);
+  let dateInput = $("#date").val();
+  event.preventDefault();
+  if(cityInput === "" || dateInput === "")
+  {
+    alert("Enter all the Required fields");
+  }
+  else
+  {
+  getTempData(cityInput,dateInput);
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
-  getEventsCityDate(cityInput)
+  getEventsCityDate(cityInput);
+  }
 })
 
 getLocation();
