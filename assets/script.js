@@ -77,7 +77,12 @@ function displayCityName(lat,lon) {
       url: queryURL,
       method:"GET"
   }).then(function(response){   
-      weatherInfo(response);
+    var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
+    $("#weather-icon").attr("src",imageSrc);
+    $("#weather").html("Weather Conditions: "+ response.weather[0].main);
+    $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
+    $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
+    $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
   })
 }
 
@@ -104,48 +109,20 @@ function convertUnixtoDate(unixformat) {
 }
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
-function getTempData(cityInput){
+function getTempData(cityInput,dateInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  $("#location-and-date").html(cityInput + "("+dateInput+")");
   $.ajax({
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    weatherInfo(response);
-  })
-}
-
-// Function to display Weather Information 
-function weatherInfo(response)
-{
-  var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
+    var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-  $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
-}
-
-function getEvents1(){
-  var querystr = "http://www.mapquestapi.com/search/v4/place?key=93hIxfKPXiCmgbqkszFWPTg0QKE5OotU&maxMatches=10&location=-121.8936832,47.5201536&category=sic:799601&sort=distance";
-  $.ajax({
-      // method:"GET",
-//       headers: {
-        
-//         'Access-Control-Allow-Origin' : '*',
-//         'Access-Control-Allow-Origin': 'http://www.mapquestapi.com',
-// 'Access-Control-Allow-Headers': 'json'
-//     },
-//     crossDomain: true,
-//       url:querystr
-type:"GET",
-      url:querystr,
-      async:true,
-      dataType: "json",
-  }).then(function(response){
-      console.log(response);
   })
 }
-
 
 function displayAttractions(city){
   let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=5&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
@@ -172,12 +149,20 @@ function displayAttractions(city){
 
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
-  event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
-  getTempData(cityInput);
+  let dateInput = $("#date").val();
+  event.preventDefault();
+  if(cityInput === "" || dateInput === "")
+  {
+    alert("Enter all the Required fields");
+  }
+  else
+  {
+  getTempData(cityInput,dateInput);
   updateWeek($("#date").val());
   displayAttractions(cityInput);
-  getEventsCityDate(cityInput.toLowerCase())
+  getEventsCityDate(cityInput.toLowerCase());
+  } 
 })
 
 getLocation();
