@@ -3,7 +3,7 @@ var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
-var outdoorActivities = ["Ride a bike", "Play hopskotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
+var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
 function limitCalendar(){
