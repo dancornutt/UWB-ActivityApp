@@ -23,7 +23,7 @@ function showPosition(position) {
   getEvents(getGeoHash(lat, lon));
   displayAttractions(getGeoHash(lat, lon))
   displayCityName(lat,lon);
-  getEvents1();
+  weekForecast(lat,lon);
 }
 
 function getGeoHash(lat, lon) {
@@ -83,6 +83,18 @@ function displayCityName(lat,lon) {
   }).then(function(response){   
     $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
     WeatherInfo(response);
+  })
+}
+
+function weekForecast(lat,lon){
+  console.log(lat);
+  let queryURL3 = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  console.log(queryURL3);
+  $.ajax({
+    url:queryURL3,
+    method:"GET"
+  }).then(function(response){
+    console.log(response);
   })
 }
 
@@ -183,6 +195,7 @@ $("#submit").on("click",function(event){
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
   getEventsCityDate(cityInput);
+  
   }
 })
 
