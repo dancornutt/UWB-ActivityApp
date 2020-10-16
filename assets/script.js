@@ -21,6 +21,7 @@ function showPosition(position) {
   var lon = position.coords.longitude;
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
+  displayAttractions(getGeoHash(lat, lon))
   displayCityName(lat,lon);
   getEvents1();
 }
@@ -104,7 +105,7 @@ function convertUnixtoDate(unixformat) {
   var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
   var month = (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
   var year = date.getFullYear();
-  var formattedDate = day + '-' + month + '-' + year;
+  var formattedDate = year + '-' + month + '-' + day;
   return (formattedDate);
 }
 
@@ -134,7 +135,7 @@ function displayAttractions(city){
     $("#attractions").empty();
     let attractions = response.results
     console.log(attractions)
-    if (attractions === []){
+    if (attractions.length === 0){
       let noAttraction = $("<li>").text("No attractions found at your location.")
       $("#attractions").append(noAttraction)
     } else {
@@ -145,6 +146,15 @@ function displayAttractions(city){
       })
     }
   })
+}
+
+function toTitleCase(str) {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
 }
 
 //Click Event Handler while searching for a specific location
@@ -160,9 +170,9 @@ $("#submit").on("click",function(event){
   {
   getTempData(cityInput,dateInput);
   updateWeek($("#date").val());
-  displayAttractions(cityInput);
-  getEventsCityDate(cityInput.toLowerCase());
-  } 
+  displayAttractions(toTitleCase(cityInput));
+  getEventsCityDate(cityInput);
+  }
 })
 
 getLocation();
