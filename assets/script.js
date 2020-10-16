@@ -147,14 +147,23 @@ function displayAttractions(city){
   })
 }
 
+function toTitleCase(str) {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+}
+
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
   event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
   getTempData(cityInput);
   updateWeek($("#date").val());
-  displayAttractions(cityInput);
-  getEventsCityDate(cityInput.toLowerCase())
+  displayAttractions(toTitleCase(cityInput));
+  getEventsCityDate(cityInput)
 })
 
 getLocation();
