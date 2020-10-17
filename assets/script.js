@@ -11,17 +11,12 @@ function limitCalendar(){
   $("#date").attr("min", today) 
 }
 
-limitCalendar()
-
 function initialize() {
-  if (JSON.parse(localStorage.getItem("!Bored-Events") !== null)) {
+  limitCalendar();
+  if (localStorage.getItem("!Bored-Events") !== "undefined") {
     favoriteEvents = {...JSON.parse(localStorage.getItem("!Bored-Events"))};
     updateFavoriteEventsUI();
   }
-}
-
-function updateFavorites() {
-  localStorage.setItem("!Bored-Events", JSON.stringify(this.favorites));
 }
 
 function getLocation() {
@@ -35,7 +30,6 @@ function getLocation() {
   }
 }
 
-// This will get called after getCurrentPosition()
 function showPosition(position) {
   // Grab coordinates from the given object
   var lat = position.coords.latitude;
@@ -81,24 +75,6 @@ function getEvents(geoHash) {
       });
     }
 
-// function updateEventsUI(data_arr){
-//   $("#events").empty();
-//   data_arr.forEach((element, index) => {
-//     let newEvent = $("<li>")
-//       .attr("data", `${index}`)
-//       .html(`<a href=${element.url}>${element.dates.start.localDate}: ${element.name}</a>`);
-//     let addEventBtn = $("<button>")
-//       .attr("class", "btn btn-secondary btn-sm")
-//       .html("<i class='far fa-heart'></i>");
-//     newEvent.append(addEventBtn);
-//     $("#events").append(newEvent)
-//   })
-
-  // for (let i=0; i<10; i++) {
-  //   let newEvent = $("<li>")
-  //     .html(`<a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
-  //   $("#events").append(newEvent);
-  // }
   function updateEventsUI(data_arr){
     $("#events").empty();
     data_arr.forEach((element, index) => {
@@ -142,6 +118,7 @@ function convertKtoF(tempInKelvin) {
   return ((tempInKelvin - 273.15) * 9) / 5 + 32;
 }
 
+//Updates 
 function updateWeek(date) {
   this.today = date;
   this.tomorrow = moment(date).add(7,'days').format("YYYY-MM-DD");
@@ -230,6 +207,18 @@ function toTitleCase(str) {
   );
 }
 
+function updateFavoriteEventsUI() {
+    $("#fav-events").empty();
+    let keys = Object.keys(favoriteEvents);
+    console.log("from update Favorites UI", favoriteEvents);
+    if (keys) {
+      keys.forEach(element => {
+        let newFav = $("<li>").html(favoriteEvents[`${element}`].name);
+        $("#fav-events").append(newFav);
+      })
+    }
+}
+
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
   let cityInput = $("#location").val().toLowerCase().trim();
@@ -250,13 +239,8 @@ $("#submit").on("click",function(event){
 
 //Click Event Handler on events
 $("#events").on("click",function(event){
-  console.log($(event.target).parent())
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
-    let id = $(event.target).parent().parent()[0].attributes[0].value;
-    let text = $(event.target).parent().parent()[0].innerText;
-    favoriteEvents[`${id}`] = text;
-    console.log("my favorite events: ", $(event.target).parent()[0].childNodes[0].dataset);
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
     $("#modalLabel").html(eventData.title);
     $(".modal-body").html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
@@ -267,42 +251,24 @@ $("#events").on("click",function(event){
         "url": eventData.url
 
       })
-    // saveFavoriteEvents();
     }
   })
 
-function updateFavoriteEventsUI() {
-    $("#fav-events").empty();
-    let keys = Object.keys(favoriteEvents);
-    if (keys) {
-      keys.forEach(element => {
-        let newFav = $("<li>").html(favoriteEvents[`${element}`]);
-        $("#fav-events").append(newFav);
-      })
-    }
-}
-
 $("#saveEvent").on("click",function(event){
-  console.log("Save event ", event.target.title);
-  
-})
-
-function saveFavoriteEvents() {
-  localStorage.setItem("!Bored-Events", JSON.stringify({...favoriteEvents}));
+  let data = event.target.attributes;
+  favoriteEvents[`${data.date.value}|${data.title.value}`] = {
+    name: `${data.title.value}`,
+    date: `${data.date.value}`,
+    url: `${data.url.value}`
+  };
+  localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
   updateFavoriteEventsUI();
-}
+})
 
 $('#myModal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
 })
 
-// event.preventDefault();
-// let cityInput = $("#location").val().toLowerCase().trim();
-// getTempData(cityInput);
-// updateWeek($("#date").val());
-// displayAttractions(toTitleCase(cityInput));
-// getEventsCityDate(cityInput)
-
-
 initialize();
+
 getLocation();
