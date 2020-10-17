@@ -37,3 +37,14 @@ h3{
     margin: 5px;
     border-radius: 5px;
 }
+
+.delete-button{
+    color: red;
+    border-width: 0px;
+    background: none;
+}
+
+.delete-button:hover{
+    border-width:1px;
+    border-color: black;
+}
