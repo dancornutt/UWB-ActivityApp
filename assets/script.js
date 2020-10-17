@@ -19,7 +19,7 @@ function initialize() {
     updateFavoriteEventsUI();
   };
   if (localStorage.getItem("!Bored-Attractions") !== "undefined") {
-    favoriteAttractions = {...JSON.parse(localStorage.getItem("!Bored-Attractions"))};
+    favoriteAttractions = { ...JSON.parse(localStorage.getItem("!Bored-Attractions")) };
     updateFavoriteAttractionsUI();
   }
 }
@@ -34,7 +34,7 @@ function getLocation() {
     $("#alertHeader").text("Geolocation is not supported by this browser.")
     $("#alertBody").text("Please search for your location using the provided form.")
     $("#alertModal").addClass("active")
-    $("#closeAlert").on("click", function(event){
+    $("#closeAlert").on("click", function (event) {
       event.preventDefault()
       $("#alertModal").removeClass("active")
     })
@@ -85,7 +85,28 @@ function getEventsCityDate(city) {
   });
 }
 
-<<<<<<< HEAD
+function updateAttractionsUI(data_arr) {
+  data_arr.forEach(element => {
+    let newAttraction = $("<li>");
+    newAttraction.text(element.name)
+    let newAttractionBtn = $("<button>")
+      .attr({
+        "type": "button",
+        "class": "btn btn-info btn-sm attractionChoices",
+        "data-container": "body",
+        "data-toggle": "modal",
+        "data-target": "#exampleModal",
+        "data-list": `attractions`,
+        "data-title": `${element}`,
+        "data-url": ""
+      })
+      .html(`${element}`);
+    newAttraction
+      .append(newAttractionBtn);
+    $("#attractions").append(newAttraction);
+  })
+}
+
 function updateEventsUI(data_arr) {
   $("#events").empty();
   data_arr = [...data_arr.slice(0, 10)];
@@ -99,6 +120,7 @@ function updateEventsUI(data_arr) {
         "data-container": "body",
         "data-toggle": "modal",
         "data-target": "#exampleModal",
+        "data-list": `events`,
         "data-date": `${element.dates.start.localDate}`,
         "data-url": `${element.url}`,
         "data-title": `${element.name}`
@@ -107,52 +129,6 @@ function updateEventsUI(data_arr) {
     newEvent
       .append(newEventBtn)
     $("#events")
-=======
-  function updateAttractionsUI(data_arr){
-    data_arr.forEach(element => {
-      let newAttraction = $("<li>");
-      newAttraction.text(element.name)
-      let newAttractionBtn = $("<button>")
-        .attr({
-          "type": "button",
-          "class": "btn btn-info btn-sm attractionChoices",
-          "data-container": "body",
-          "data-toggle": "modal",
-          "data-target": "#exampleModal",
-          "data-list": `attractions`,
-          "data-title": `${element}`,
-          "data-url": ""
-        })
-        .html(`${element}`);
-      newAttraction
-      .append(newAttractionBtn);
-      $("#attractions").append(newAttraction);
-    })
-  } 
-
-  function updateEventsUI(data_arr){
-    $("#events").empty();
-    data_arr = [...data_arr.slice(0,10)];
-    data_arr.forEach((element, index) => {
-      let newEvent = $("<li>")
-        .attr("data", `${index}`)
-      let newEventBtn = $("<button>")
-        .attr({
-          "type": "button",
-          "class": "btn btn-info btn-sm eventChoices",
-          "data-container": "body",
-          "data-toggle": "modal",
-          "data-target": "#exampleModal",
-          "data-list": `events`,
-          "data-date": `${element.dates.start.localDate}`,
-          "data-url": `${element.url}`,
-          "data-title": `${element.name}`
-        })
-        .html(`${element.name}`);
-      newEvent
-        .append(newEventBtn)
-      $("#events")
->>>>>>> develop
       .append(newEvent)
   })
 }
@@ -214,14 +190,12 @@ function getTempData(cityInput, dateInput) {
 
 //Weather info based on date selected
 
-<<<<<<< HEAD
 function dayForecast(cityLat, cityLon, dateDiff) {
   let forecastQueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + cityLat + "&lon=" + cityLon + "&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
     method: "GET",
     url: forecastQueryURL
   }).then(function (response) {
-    console.log(response);
     var imageSrc = " https://openweathermap.org/img/wn/" + response.daily[dateDiff].weather[0].icon + ".png";
     $("#weather-icon").attr("src", imageSrc);
     $("#weather").html("Weather Conditions: " + response.daily[dateDiff].weather[0].main);
@@ -233,25 +207,6 @@ function dayForecast(cityLat, cityLon, dateDiff) {
       $("#recommendation").text("indoor")
     }
   })
-=======
-function dayForecast(cityLat,cityLon,dateDiff){
-let forecastQueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat="+cityLat+"&lon="+cityLon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
-$.ajax({
-  method:"GET",
-  url:forecastQueryURL
-}).then(function(response){
-  var imageSrc = " https://openweathermap.org/img/wn/"+response.daily[dateDiff].weather[0].icon+".png";
-  $("#weather-icon").attr("src",imageSrc);
-  $("#weather").html("Weather Conditions: "+ response.daily[dateDiff].weather[0].main);
-  $("#temp").html("Temparature: "+ (convertKtoF(response.daily[dateDiff].temp.day)).toFixed(2) + "&deg;F");
-  $("#wind").html("Wind Speed: "+response.daily[dateDiff].wind_speed+"MPH");
-  if(response.daily[dateDiff].weather[0].main === "Clear" || response.daily[dateDiff].weather[0].main === "Clouds"){
-    $("#recommendation").text("outdoor")
-  } else {
-    $("#recommendation").text("indoor")
-  }
-})
->>>>>>> develop
 }
 
 
@@ -274,44 +229,20 @@ function WeatherInfo(response) {
 function displayAttractions(city) {
   let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id=" + city + "&count=15&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
   $.ajax({
-<<<<<<< HEAD
     url: attractionsQueryURL,
     method: "GET"
   }).then(function (response) {
-    console.log(response)
     $("#attractions").empty();
     let attractions = response.results
-    console.log(attractions)
     if (attractions.length === 0) {
-      let noAttraction = $("<li>").text("No city attractions found at your location. Try one of these:")
-      $("#attractions").append(noAttraction)
-      if ($("#recommendation").text() === "outdoor") {
-        outdoorActivities.forEach(element => {
-          let outdoorActivityList = $("<li>").text(element)
-          $("#attractions").append(outdoorActivityList)
-        })
-      } else if ($("#recommendation").text() === "indoor") {
-        indoorActivities.forEach(element => {
-          let indoorActivityList = $("<li>").text(element)
-          $("#attractions").append(indoorActivityList)
-        })
-      }
-=======
-      url: attractionsQueryURL,
-      method:"GET"
-  }).then(function(response){
-    $("#attractions").empty();
-    let attractions = response.results
-    if (attractions.length === 0){
       //TODO is the weather known here yet? I donno -Dan
       let noAttraction = $("<li>").text("No city attractions found at your location. Try one of these:")
       $("#attractions").append(noAttraction)
-      if ($("#recommendation").text()==="outdoor"){
+      if ($("#recommendation").text() === "outdoor") {
         updateAttractionsUI(outdoorActivities);
-      } else if ($("#recommendation").text()==="indoor"){
+      } else if ($("#recommendation").text() === "indoor") {
         updateAttractionsUI(indoorActivities);
-      }  
->>>>>>> develop
+      }
     } else {
       attractionList = [];
       attractions.forEach(element => {
@@ -332,32 +263,20 @@ function toTitleCase(str) {
 }
 
 function updateFavoriteEventsUI() {
-<<<<<<< HEAD
   $("#fav-events").empty();
   let keys = Object.keys(favoriteEvents);
-  console.log("from update Favorites UI", favoriteEvents);
   if (keys) {
     keys.forEach(element => {
-      let newFav = $("<li>").html(favoriteEvents[`${element}`].name);
+      let newFav = $("<li>").html('<span>' + element + '</span>' + '<button class="delete-button"><i class="trash alternate icon"></i></button>');
+      newFav.attr("id", favoriteEvents[`${element}`].name)
       $("#fav-events").append(newFav);
+      $(".delete-button").on("click", function (event) {
+        event.preventDefault()
+        let deletedEvent = $(this).parent().attr("id")
+        console.log(deletedEvent)
+      })
     })
   }
-=======
-    $("#fav-events").empty();
-    let keys = Object.keys(favoriteEvents);
-    if (keys) {
-      keys.forEach(element => {
-        let newFav = $("<li>").html('<span>'+element+'</span>' + '<button class="delete-button"><i class="trash alternate icon"></i></button>');
-        newFav.attr("id", favoriteEvents[`${element}`].name)
-        $("#fav-events").append(newFav);
-        $(".delete-button").on("click", function(event){
-          event.preventDefault()
-          let deletedEvent = $(this).parent().attr("id")
-          console.log(deletedEvent)
-        })
-      })
-    }
->>>>>>> develop
 }
 
 function updateFavoriteAttractionsUI() {
@@ -377,20 +296,14 @@ $("#submit").on("click", function (event) {
   let cityInput = $("#location").val().toLowerCase().trim();
   let dateInput = $("#date").val();
   event.preventDefault();
-<<<<<<< HEAD
   if (cityInput === "" || dateInput === "") {
-    alert("Enter all the Required fields");
-=======
-  if(cityInput === "" || dateInput === "")
-  {
     $("#alertHeader").text("You are missing a field.")
     $("#alertBody").text("Please enter both a location and date.")
     $("#alertModal").addClass("active")
-    $("#closeAlert").on("click", function(event){
+    $("#closeAlert").on("click", function (event) {
       event.preventDefault()
       $("#alertModal").removeClass("active")
     })
->>>>>>> develop
   }
   else {
     getTempData(cityInput, dateInput);
@@ -402,10 +315,7 @@ $("#submit").on("click", function (event) {
 })
 
 //Click Event Handler on events
-<<<<<<< HEAD
-$("#events").on("click", function (event) {
-=======
-$("#attractions").on("click",function(event){
+$("#attractions").on("click", function (event) {
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
@@ -421,12 +331,11 @@ $("#attractions").on("click",function(event){
         "list": "attractions"
 
       })
-    }
-  })
+  }
+})
 
 //Click Event Handler on events
-$("#events").on("click",function(event){
->>>>>>> develop
+$("#events").on("click", function (event) {
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
@@ -445,14 +354,10 @@ $("#events").on("click",function(event){
   }
 })
 
-<<<<<<< HEAD
-$("#saveEvent").on("click", function (event) {
-=======
-$("#save").on("click",function(event){
->>>>>>> develop
+$("#save").on("click", function (event) {
   let data = event.target.attributes;
   if (data.list.value === "events") {
-      favoriteEvents[`${data.date.value}|${data.title.value}`] = {
+    favoriteEvents[`${data.date.value}|${data.title.value}`] = {
       name: `${data.title.value}`,
       date: `${data.date.value}`,
       url: `${data.url.value}`
@@ -475,7 +380,6 @@ $('#myModal').on('shown.bs.modal', function () {
 })
 
 
-<<<<<<< HEAD
 getLocation();
 
 var count = 0;
@@ -486,8 +390,6 @@ countButton.onclick = function () {
   displayCount.textContent = count;
 }
 
-=======
 
 initialize();
 getLocation();
->>>>>>> develop
