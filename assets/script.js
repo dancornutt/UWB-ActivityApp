@@ -37,7 +37,8 @@ function showPosition(position) {
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
   displayCityName(lat,lon);
-  displayAttractions(getGeoHash(lat, lon));
+  displayAttractions(getGeoHash(lat, lon))
+
 }
 
 function getGeoHash(lat, lon) {
@@ -99,9 +100,8 @@ function getEvents(geoHash) {
     })
 } 
 
-
-
 //When current location is enabled on the browser
+
 function displayCityName(lat,lon) {
   let queryURL = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
@@ -114,6 +114,7 @@ function displayCityName(lat,lon) {
 }
 
 //Temparature conversion function
+
 function convertKtoF(tempInKelvin) {
   return ((tempInKelvin - 273.15) * 9) / 5 + 32;
 }
@@ -125,6 +126,7 @@ function updateWeek(date) {
 }
 
 //Convert Unix format to Standard Date
+
 function convertUnixtoDate(unixformat) {
   var unixTimeStamp = unixformat;
   var timestampInMilliSeconds = unixTimeStamp*1000;
@@ -137,6 +139,7 @@ function convertUnixtoDate(unixformat) {
 }
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
+
 function getTempData(cityInput,dateInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $("#location-and-date").html(cityInput + "("+dateInput+")");
@@ -144,9 +147,37 @@ function getTempData(cityInput,dateInput){
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    WeatherInfo(response);
+    var currDate = moment().format("YYYY-MM-DD");
+    var dateDiff = (Date.parse(dateInput) - Date.parse(currDate))/86400000;
+   var cityLat = response.coord.lat;
+   var cityLon = response.coord.lon;
+   dayForecast(cityLat,cityLon,dateDiff);
   })
 }
+
+//Weather info based on date selected
+
+function dayForecast(cityLat,cityLon,dateDiff){
+let forecastQueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat="+cityLat+"&lon="+cityLon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+$.ajax({
+  method:"GET",
+  url:forecastQueryURL
+}).then(function(response){
+  console.log(response);
+  var imageSrc = " https://openweathermap.org/img/wn/"+response.daily[dateDiff].weather[0].icon+".png";
+  $("#weather-icon").attr("src",imageSrc);
+  $("#weather").html("Weather Conditions: "+ response.daily[dateDiff].weather[0].main);
+  $("#temp").html("Temparature: "+ (convertKtoF(response.daily[dateDiff].temp.day)).toFixed(2) + "&deg;F");
+  $("#wind").html("Wind Speed: "+response.daily[dateDiff].wind_speed+"MPH");
+  if(response.daily[dateDiff].weather[0].main === "Clear" || response.daily[dateDiff].weather[0].main === "Clouds"){
+    $("#recommendation").text("outdoor")
+  } else {
+    $("#recommendation").text("indoor")
+  }
+})
+}
+
+
 
 //Weather Info
 
@@ -220,6 +251,7 @@ function updateFavoriteEventsUI() {
 }
 
 //Click Event Handler while searching for a specific location
+
 $("#submit").on("click",function(event){
   let cityInput = $("#location").val().toLowerCase().trim();
   let dateInput = $("#date").val();
@@ -234,6 +266,7 @@ $("#submit").on("click",function(event){
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
   getEventsCityDate(cityInput);
+  
   }
 })
 
