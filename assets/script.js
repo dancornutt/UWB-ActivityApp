@@ -3,7 +3,7 @@ var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
-var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "Go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
+var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
 function limitCalendar(){
@@ -36,7 +36,9 @@ function showPosition(position) {
   var lon = position.coords.longitude;
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
+  displayCityName(lat,lon);
   displayAttractions(getGeoHash(lat, lon))
+
 }
 
 function getGeoHash(lat, lon) {
@@ -65,7 +67,6 @@ function getEvents(geoHash) {
       async:true,
       dataType: "json",
       success: function(json){
-        console.log("From getEventsCityDate", json);
         updateEventsUI([...json._embedded.events])
       },
       error: function(xhr, status, err) {
@@ -76,6 +77,7 @@ function getEvents(geoHash) {
 
   function updateEventsUI(data_arr){
     $("#events").empty();
+    data_arr = [...data_arr.slice(0,10)];
     data_arr.forEach((element, index) => {
       let newEvent = $("<li>")
         .attr("data", `${index}`)
@@ -106,7 +108,8 @@ function displayCityName(lat,lon) {
       url: queryURL,
       method:"GET"
   }).then(function(response){   
-      weatherInfo(response);
+    $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
+    WeatherInfo(response);
   })
 }
 
@@ -131,7 +134,7 @@ function convertUnixtoDate(unixformat) {
   var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
   var month = (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
   var year = date.getFullYear();
-  var formattedDate = day + '-' + month + '-' + year;
+  var formattedDate = year + '-' + month + '-' + day;
   return (formattedDate);
 }
 
@@ -139,6 +142,7 @@ function convertUnixtoDate(unixformat) {
 
 function getTempData(cityInput,dateInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  $("#location-and-date").html(cityInput + "("+dateInput+")");
   $.ajax({
     method:"GET",
     url: TempapiURL
@@ -184,7 +188,6 @@ function WeatherInfo(response)
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-  $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
   if(response.weather[0].main === "Clear" || response.weather[0].main === "Clouds"){
     $("#recommendation").text("outdoor")
   } else {
@@ -207,19 +210,19 @@ function displayAttractions(city){
       $("#attractions").append(noAttraction)
       if ($("#recommendation").text()==="outdoor"){
         outdoorActivities.forEach(element => {
-        let outdoorActivityList = $("<li>").html('<button class="ui icon button heart-button"><i class="heart icon mr-3"></i></button>' + element);
+        let outdoorActivityList = $("<li>").text(element)
         $("#attractions").append(outdoorActivityList)
         })
       } else if ($("#recommendation").text()==="indoor"){
         indoorActivities.forEach(element => {
-        let indoorActivityList = $("<li>").html('<button class="ui icon button heart-button"><i class="heart icon mr-3"></i></button>' + element);
+        let indoorActivityList = $("<li>").text(element)
         $("#attractions").append(indoorActivityList)
         })
       }  
     } else {
       attractions.forEach(element => {
         let newAttraction = $("<li>")
-        newAttraction.html('<button class="ui icon button heart-button"><i class="heart icon mr-3"></i></button>' + element.name);
+        newAttraction.text(element.name)
         $("#attractions").append(newAttraction)
       })
     }
@@ -250,9 +253,16 @@ function updateFavoriteEventsUI() {
 //Click Event Handler while searching for a specific location
 
 $("#submit").on("click",function(event){
-  event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
-  getTempData(cityInput);
+  let dateInput = $("#date").val();
+  event.preventDefault();
+  if(cityInput === "" || dateInput === "")
+  {
+    alert("Enter all the Required fields");
+  }
+  else
+  {
+  getTempData(cityInput,dateInput);
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
   getEventsCityDate(cityInput);

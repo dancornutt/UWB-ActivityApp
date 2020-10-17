@@ -33,12 +33,7 @@ h3{
     height: 100px !important;
 }
 
-.heart-button{
-    background: none !important;
-    color: red !important;
-
-}
-
-.heart-button:hover{
-    color: black !important;
+.eventChoices{
+    margin: 5px;
+    border-radius: 5px;
 }
