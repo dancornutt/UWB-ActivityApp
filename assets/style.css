@@ -32,3 +32,8 @@ h3{
     width: 100px !important;
     height: 100px !important;
 }
+
+.eventChoices{
+    margin: 5px;
+    border-radius: 5px;
+}
