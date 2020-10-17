@@ -263,17 +263,18 @@ function toTitleCase(str) {
 }
 
 function updateFavoriteEventsUI() {
-  $("#fav-events").empty();
-  let keys = Object.keys(favoriteEvents);
-  if (keys) {
-    keys.forEach(element => {
-      let newFav = $("<li>").html('<span>' + element + '</span>' + '<button class="delete-button"><i class="trash alternate icon"></i></button>');
-      newFav.attr("id", favoriteEvents[`${element}`].name)
-      $("#fav-events").append(newFav);
-      $(".delete-button").on("click", function (event) {
-        event.preventDefault()
-        let deletedEvent = $(this).parent().attr("id")
-        console.log(deletedEvent)
+
+    $("#fav-events").empty();
+    let keys = Object.keys(favoriteEvents);
+    if (keys) {
+      keys.forEach(element => {
+        let newFav = $("<li>")
+          .html('<span>'+element+'</span>' + '<button class="delete-button"><i class="trash alternate icon"></i></button>')
+          .attr({
+            "id": `${favoriteEvents[`${element}`].date}|${favoriteEvents[`${element}`].name}`,
+            "list": "events"
+          })
+        $("#fav-events").append(newFav);
       })
     })
   }
@@ -284,15 +285,23 @@ function updateFavoriteAttractionsUI() {
   let keys = Object.keys(favoriteAttractions);
   if (keys) {
     keys.forEach(element => {
-      let newFav = $("<li>").html(favoriteAttractions[`${element}`].name);
-      $("#fav-attractions").append(newFav);
+      let newFav = $("<li>")
+        .html(`<span>${element}</span><button class="delete-button"><i class="trash alternate icon"></i></button>`)
+        .attr({
+          "id": `${favoriteAttractions[`${element}`].name}`,
+          "list": "attractions"
+        })
+        $("#fav-attractions").append(newFav);
     })
   }
 }
 
 //Click Event Handler while searching for a specific location
 
-$("#submit").on("click", function (event) {
+
+$("#submit").on("click",function(event){
+  event.preventDefault();
+
   let cityInput = $("#location").val().toLowerCase().trim();
   let dateInput = $("#date").val();
   event.preventDefault();
@@ -315,7 +324,9 @@ $("#submit").on("click", function (event) {
 })
 
 //Click Event Handler on events
-$("#attractions").on("click", function (event) {
+
+$("#attractions").on("click",function(event){
+  event.preventDefault();
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
@@ -335,7 +346,9 @@ $("#attractions").on("click", function (event) {
 })
 
 //Click Event Handler on events
-$("#events").on("click", function (event) {
+
+$("#events").on("click",function(event){
+  event.preventDefault();
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
@@ -354,7 +367,10 @@ $("#events").on("click", function (event) {
   }
 })
 
-$("#save").on("click", function (event) {
+
+$("#save").on("click",function(event){
+  event.preventDefault();
+
   let data = event.target.attributes;
   if (data.list.value === "events") {
     favoriteEvents[`${data.date.value}|${data.title.value}`] = {
@@ -372,7 +388,22 @@ $("#save").on("click", function (event) {
     localStorage.setItem("!Bored-Attractions", JSON.stringify(favoriteAttractions));
     updateFavoriteAttractionsUI();
   }
+})
 
+$("#fav-events").on("click", function(event){
+  event.preventDefault();
+  savedItem = $(event.target).parent().parent();
+  delete favoriteEvents[`${savedItem[0].attributes.id.value}`]
+  localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
+  updateFavoriteEventsUI();
+})
+
+$("#fav-attractions").on("click", function(event){
+  event.preventDefault();
+  savedItem = $(event.target).parent().parent();
+  delete favoriteAttractions[`${savedItem[0].attributes.id.value}`]
+  localStorage.setItem("!Bored-Attractions", JSON.stringify(favoriteAttractions));
+  updateFavoriteAttractionsUI();
 })
 
 $('#myModal').on('shown.bs.modal', function () {
@@ -380,7 +411,6 @@ $('#myModal').on('shown.bs.modal', function () {
 })
 
 
-getLocation();
 
 var count = 0;
 var countButton = document.getElementById("like");
@@ -389,7 +419,6 @@ countButton.onclick = function () {
   count++;
   displayCount.textContent = count;
 }
-
 
 initialize();
 getLocation();
