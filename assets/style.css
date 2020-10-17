@@ -38,6 +38,10 @@ h3{
     border-radius: 5px;
 }
 
+footer {
+    box-shadow: 0px -2px #e08270;
+}
+   
 .delete-button{
     color: red;
     border-width: 0px;
