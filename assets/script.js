@@ -3,7 +3,7 @@ var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
-var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
+var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "Go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
 function limitCalendar(){
@@ -26,7 +26,13 @@ function getLocation() {
     navigator.geolocation.getCurrentPosition(showPosition);
   } 
   else {
-    alert("Geolocation is not supported by this browser.");
+    $("#alertHeader").text("Geolocation is not supported by this browser.")
+    $("#alertBody").text("Please search for your location using the provided form.")
+    $("#alertModal").addClass("active")
+    $("#closeAlert").on("click", function(event){
+      event.preventDefault()
+      $("#alertModal").removeClass("active")
+    })
   }
 }
 
@@ -264,7 +270,13 @@ $("#submit").on("click",function(event){
   event.preventDefault();
   if(cityInput === "" || dateInput === "")
   {
-    alert("Enter all the Required fields");
+    $("#alertHeader").text("You are missing a field.")
+    $("#alertBody").text("Please enter both a location and date.")
+    $("#alertModal").addClass("active")
+    $("#closeAlert").on("click", function(event){
+      event.preventDefault()
+      $("#alertModal").removeClass("active")
+    })
   }
   else
   {
