@@ -38,7 +38,19 @@ h3{
     border-radius: 5px;
 }
 
+<<<<<<< HEAD
 footer {
     box-shadow: 0px -2px #e08270;
    
+=======
+.delete-button{
+    color: red;
+    border-width: 0px;
+    background: none;
+}
+
+.delete-button:hover{
+    border-width:1px;
+    border-color: black;
+>>>>>>> develop
 }
