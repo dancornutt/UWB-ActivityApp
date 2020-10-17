@@ -2,10 +2,21 @@ let favoriteEvents = {};
 var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
+var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
+var outdoorActivities = ["Ride a bike", "Play hopskotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
+var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
+
+function limitCalendar(){
+  $("#date").attr("max", maxDay)
+  $("#date").attr("min", today) 
+}
+
+limitCalendar()
 
 function initialize() {
   if (JSON.parse(localStorage.getItem("!Bored-Events") !== null)) {
-    this.favoriteEvents = {...JSON.parse(localStorage.getItem("!Bored-Events"))}
+    favoriteEvents = {...JSON.parse(localStorage.getItem("!Bored-Events"))};
+    updateFavoriteEventsUI();
   }
 }
 
@@ -32,6 +43,7 @@ function showPosition(position) {
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
   displayCityName(lat,lon);
+  displayAttractions(getGeoHash(lat, lon));
 }
 
 function getGeoHash(lat, lon) {
@@ -69,20 +81,48 @@ function getEvents(geoHash) {
       });
     }
 
-function updateEventsUI(data_arr){
-  $("#events").empty();
-  data_arr.forEach((element, index) => {
-    // console.log(element);
-    let newEvent = $("<li>")
-      .attr("data", `${index}`)
-      .html(`<a href=${element.url}>${element.dates.start.localDate}: ${element.name}</a>`);
-    let addEventBtn = $("<button>")
-      .attr("class", "btn btn-secondary btn-sm")
-      .html("<i class='far fa-heart'></i>");
-    newEvent.append(addEventBtn);
-    $("#events").append(newEvent);
-  });
-}
+// function updateEventsUI(data_arr){
+//   $("#events").empty();
+//   data_arr.forEach((element, index) => {
+//     let newEvent = $("<li>")
+//       .attr("data", `${index}`)
+//       .html(`<a href=${element.url}>${element.dates.start.localDate}: ${element.name}</a>`);
+//     let addEventBtn = $("<button>")
+//       .attr("class", "btn btn-secondary btn-sm")
+//       .html("<i class='far fa-heart'></i>");
+//     newEvent.append(addEventBtn);
+//     $("#events").append(newEvent)
+//   })
+
+  // for (let i=0; i<10; i++) {
+  //   let newEvent = $("<li>")
+  //     .html(`<a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
+  //   $("#events").append(newEvent);
+  // }
+  function updateEventsUI(data_arr){
+    $("#events").empty();
+    data_arr.forEach((element, index) => {
+      let newEvent = $("<li>")
+        .attr("data", `${index}`)
+      let newEventBtn = $("<button>")
+        .attr({
+          "type": "button",
+          "class": "btn btn-info btn-sm eventChoices",
+          "data-container": "body",
+          "data-toggle": "modal",
+          "data-target": "#exampleModal",
+          "data-date": `${element.dates.start.localDate}`,
+          "data-url": `${element.url}`,
+          "data-title": `${element.name}`
+        })
+        .html(`${element.name}`);
+      newEvent
+        .append(newEventBtn)
+      $("#events")
+      .append(newEvent)
+    })
+} 
+
 
 
 //When current location is enabled on the browser
@@ -92,7 +132,8 @@ function displayCityName(lat,lon) {
       url: queryURL,
       method:"GET"
   }).then(function(response){   
-      weatherInfo(response);
+    $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
+    WeatherInfo(response);
   })
 }
 
@@ -114,34 +155,40 @@ function convertUnixtoDate(unixformat) {
   var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
   var month = (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
   var year = date.getFullYear();
-  var formattedDate = day + '-' + month + '-' + year;
+  var formattedDate = year + '-' + month + '-' + day;
   return (formattedDate);
 }
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
-function getTempData(cityInput){
+function getTempData(cityInput,dateInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+  $("#location-and-date").html(cityInput + "("+dateInput+")");
   $.ajax({
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    weatherInfo(response);
+    WeatherInfo(response);
   })
 }
 
-// Function to display Weather Information 
-function weatherInfo(response)
+//Weather Info
+
+function WeatherInfo(response)
 {
   var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
-  $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
+  if(response.weather[0].main === "Clear" || response.weather[0].main === "Clouds"){
+    $("#recommendation").text("outdoor")
+  } else {
+    $("#recommendation").text("indoor")
+  }
 }
 
 function displayAttractions(city){
-  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=5&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
+  let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id="+city+"&count=15&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
   $.ajax({
       url: attractionsQueryURL,
       method:"GET"
@@ -150,9 +197,20 @@ function displayAttractions(city){
     $("#attractions").empty();
     let attractions = response.results
     console.log(attractions)
-    if (attractions === []){
-      let noAttraction = $("<li>").text("No attractions found at your location.")
+    if (attractions.length === 0){
+      let noAttraction = $("<li>").text("No city attractions found at your location. Try one of these:")
       $("#attractions").append(noAttraction)
+      if ($("#recommendation").text()==="outdoor"){
+        outdoorActivities.forEach(element => {
+        let outdoorActivityList = $("<li>").text(element)
+        $("#attractions").append(outdoorActivityList)
+        })
+      } else if ($("#recommendation").text()==="indoor"){
+        indoorActivities.forEach(element => {
+        let indoorActivityList = $("<li>").text(element)
+        $("#attractions").append(indoorActivityList)
+        })
+      }  
     } else {
       attractions.forEach(element => {
         let newAttraction = $("<li>")
@@ -174,48 +232,76 @@ function toTitleCase(str) {
 
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
-  event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
-  getTempData(cityInput);
+  let dateInput = $("#date").val();
+  event.preventDefault();
+  if(cityInput === "" || dateInput === "")
+  {
+    alert("Enter all the Required fields");
+  }
+  else
+  {
+  getTempData(cityInput,dateInput);
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
-  getEventsCityDate(cityInput)
+  getEventsCityDate(cityInput);
+  }
 })
 
 //Click Event Handler on events
 $("#events").on("click",function(event){
-
   console.log($(event.target).parent())
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let id = $(event.target).parent().parent()[0].attributes[0].value;
     let text = $(event.target).parent().parent()[0].innerText;
     favoriteEvents[`${id}`] = text;
-    console.log(favoriteEvents);
-    saveFavoriteEvents();
+    console.log("my favorite events: ", $(event.target).parent()[0].childNodes[0].dataset);
+    let eventData = $(event.target).parent()[0].childNodes[0].dataset;
+    $("#modalLabel").html(eventData.title);
+    $(".modal-body").html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
+    $("#saveEvent")
+      .attr({
+        "title": eventData.title,
+        "date": eventData.date,
+        "url": eventData.url
+
+      })
+    // saveFavoriteEvents();
     }
   })
 
 function updateFavoriteEventsUI() {
-  if (favoriteEvents) {
-    let keys = favoriteEvents.keys;
-    keys.forEach(element => {
-      //Add LI in favorites
-      //Update Item in list
-    });
-  }
+    $("#fav-events").empty();
+    let keys = Object.keys(favoriteEvents);
+    if (keys) {
+      keys.forEach(element => {
+        let newFav = $("<li>").html(favoriteEvents[`${element}`]);
+        $("#fav-events").append(newFav);
+      })
+    }
 }
 
+$("#saveEvent").on("click",function(event){
+  console.log("Save event ", event.target.title);
+  
+})
+
 function saveFavoriteEvents() {
-  localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
-  //Update UI
+  localStorage.setItem("!Bored-Events", JSON.stringify({...favoriteEvents}));
+  updateFavoriteEventsUI();
 }
-  // event.preventDefault();
-  // let cityInput = $("#location").val().toLowerCase().trim();
-  // getTempData(cityInput);
-  // updateWeek($("#date").val());
-  // displayAttractions(toTitleCase(cityInput));
-  // getEventsCityDate(cityInput)
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+})
+
+// event.preventDefault();
+// let cityInput = $("#location").val().toLowerCase().trim();
+// getTempData(cityInput);
+// updateWeek($("#date").val());
+// displayAttractions(toTitleCase(cityInput));
+// getEventsCityDate(cityInput)
 
 
 initialize();
