@@ -244,8 +244,14 @@ function updateFavoriteEventsUI() {
     console.log("from update Favorites UI", favoriteEvents);
     if (keys) {
       keys.forEach(element => {
-        let newFav = $("<li>").html(favoriteEvents[`${element}`].name);
+        let newFav = $("<li>").html('<span>'+element+'</span>' + '<button class="delete-button"><i class="trash alternate icon"></i></button>');
+        newFav.attr("id", favoriteEvents[`${element}`].name)
         $("#fav-events").append(newFav);
+        $(".delete-button").on("click", function(event){
+          event.preventDefault()
+          let deletedEvent = $(this).parent().attr("id")
+          console.log(deletedEvent)
+        })
       })
     }
 }
@@ -301,6 +307,8 @@ $("#saveEvent").on("click",function(event){
 $('#myModal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
 })
+
+
 
 initialize();
 
