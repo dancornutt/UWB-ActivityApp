@@ -85,28 +85,7 @@ function getEventsCityDate(city) {
   });
 }
 
-function updateAttractionsUI(data_arr) {
-  data_arr.forEach(element => {
-    let newAttraction = $("<li>");
-    newAttraction.text(element.name)
-    let newAttractionBtn = $("<button>")
-      .attr({
-        "type": "button",
-        "class": "btn btn-info btn-sm attractionChoices",
-        "data-container": "body",
-        "data-toggle": "modal",
-        "data-target": "#exampleModal",
-        "data-list": `attractions`,
-        "data-title": `${element}`,
-        "data-url": ""
-      })
-      .html(`${element}`);
-    newAttraction
-      .append(newAttractionBtn);
-    $("#attractions").append(newAttraction);
-  })
-}
-
+<<<<<<< HEAD
 function updateEventsUI(data_arr) {
   $("#events").empty();
   data_arr = [...data_arr.slice(0, 10)];
@@ -120,7 +99,6 @@ function updateEventsUI(data_arr) {
         "data-container": "body",
         "data-toggle": "modal",
         "data-target": "#exampleModal",
-        "data-list": `events`,
         "data-date": `${element.dates.start.localDate}`,
         "data-url": `${element.url}`,
         "data-title": `${element.name}`
@@ -129,6 +107,52 @@ function updateEventsUI(data_arr) {
     newEvent
       .append(newEventBtn)
     $("#events")
+=======
+  function updateAttractionsUI(data_arr){
+    data_arr.forEach(element => {
+      let newAttraction = $("<li>");
+      newAttraction.text(element.name)
+      let newAttractionBtn = $("<button>")
+        .attr({
+          "type": "button",
+          "class": "btn btn-info btn-sm attractionChoices",
+          "data-container": "body",
+          "data-toggle": "modal",
+          "data-target": "#exampleModal",
+          "data-list": `attractions`,
+          "data-title": `${element}`,
+          "data-url": ""
+        })
+        .html(`${element}`);
+      newAttraction
+      .append(newAttractionBtn);
+      $("#attractions").append(newAttraction);
+    })
+  }
+
+  function updateEventsUI(data_arr){
+    $("#events").empty();
+    data_arr = [...data_arr.slice(0,10)];
+    data_arr.forEach((element, index) => {
+      let newEvent = $("<li>")
+        .attr("data", `${index}`)
+      let newEventBtn = $("<button>")
+        .attr({
+          "type": "button",
+          "class": "btn btn-info btn-sm eventChoices",
+          "data-container": "body",
+          "data-toggle": "modal",
+          "data-target": "#exampleModal",
+          "data-list": `events`,
+          "data-date": `${element.dates.start.localDate}`,
+          "data-url": `${element.url}`,
+          "data-title": `${element.name}`
+        })
+        .html(`${element.name}`);
+      newEvent
+        .append(newEventBtn)
+      $("#events")
+>>>>>>> develop
       .append(newEvent)
   })
 }
