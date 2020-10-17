@@ -1,4 +1,5 @@
 let favoriteEvents = {};
+let favoriteAttractions = {};
 var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
@@ -16,6 +17,10 @@ function initialize() {
   if (localStorage.getItem("!Bored-Events") !== "undefined") {
     favoriteEvents = {...JSON.parse(localStorage.getItem("!Bored-Events"))};
     updateFavoriteEventsUI();
+  };
+  if (localStorage.getItem("!Bored-Attractions") !== "undefined") {
+    favoriteAttractions = {...JSON.parse(localStorage.getItem("!Bored-Attractions"))};
+    displayAttractions();
   }
 }
 
@@ -75,6 +80,29 @@ function getEvents(geoHash) {
       });
     }
 
+  function updateAttractionsUI(data_arr){
+    data_arr.forEach(element => {
+      let newAttraction = $("<li>");
+      // newAttraction.text(element.name)
+      let newAttractionBtn = $("<button>")
+        .attr({
+          "type": "button",
+          "class": "btn btn-info btn-sm eventChoices",
+          "data-container": "body",
+          "data-toggle": "modal",
+          "data-target": "#exampleModal",
+          "data-list": `attractions`,
+          "data-title": `${element}`,
+          "data-url": "",
+          "data-title": ""
+        })
+        .html(`${element}`);
+      newAttraction
+      .append(newAttractionBtn);
+      $("#attractions").append(newAttraction);
+    })
+  } 
+
   function updateEventsUI(data_arr){
     $("#events").empty();
     data_arr = [...data_arr.slice(0,10)];
@@ -88,6 +116,7 @@ function getEvents(geoHash) {
           "data-container": "body",
           "data-toggle": "modal",
           "data-target": "#exampleModal",
+          "data-list": `events`,
           "data-date": `${element.dates.start.localDate}`,
           "data-url": `${element.url}`,
           "data-title": `${element.name}`
@@ -201,30 +230,24 @@ function displayAttractions(city){
       url: attractionsQueryURL,
       method:"GET"
   }).then(function(response){
-    console.log(response)
     $("#attractions").empty();
     let attractions = response.results
-    console.log(attractions)
     if (attractions.length === 0){
+      //TODO is the weather known here yet? I donno -Dan
       let noAttraction = $("<li>").text("No city attractions found at your location. Try one of these:")
       $("#attractions").append(noAttraction)
       if ($("#recommendation").text()==="outdoor"){
-        outdoorActivities.forEach(element => {
-        let outdoorActivityList = $("<li>").text(element)
-        $("#attractions").append(outdoorActivityList)
-        })
+        updateAttractionsUI(outdoorActivities);
       } else if ($("#recommendation").text()==="indoor"){
-        indoorActivities.forEach(element => {
-        let indoorActivityList = $("<li>").text(element)
-        $("#attractions").append(indoorActivityList)
-        })
+        updateAttractionsUI(indoorActivities);
       }  
     } else {
+      attractionList = [];
       attractions.forEach(element => {
-        let newAttraction = $("<li>")
-        newAttraction.text(element.name)
-        $("#attractions").append(newAttraction)
-      })
+        attractionList.push(element.name);
+        console.log(element);
+      });
+      updateAttractionsUI(attractionList);
     }
   })
 }
