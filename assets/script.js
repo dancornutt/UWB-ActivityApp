@@ -242,7 +242,6 @@ function displayAttractions(city){
       attractionList = [];
       attractions.forEach(element => {
         attractionList.push(element.name);
-        console.log(element.name);
       });
       updateAttractionsUI(attractionList);
     }
@@ -309,11 +308,12 @@ $("#attractions").on("click",function(event){
     $(".modal-body")
       .attr("class", "modal-body event")
       .html(`${eventData.title}`)
-    $("#saveEvent")
+    $("#save")
       .attr({
         "title": eventData.title,
         "date": eventData.date,
-        "url": eventData.url
+        "url": eventData.url,
+        "list": "attractions"
 
       })
     }
@@ -328,11 +328,12 @@ $("#events").on("click",function(event){
     $(".modal-body")
       .attr("class", "modal-body event")
       .html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
-    $("#saveEvent")
+    $("#save")
       .attr({
         "title": eventData.title,
         "date": eventData.date,
-        "url": eventData.url
+        "url": eventData.url,
+        "list": "events"
 
       })
     }
@@ -340,32 +341,22 @@ $("#events").on("click",function(event){
 
 $("#save").on("click",function(event){
   let data = event.target.attributes;
-  console.log("from save", data)
-  // favoriteEvents[`${data.date.value}|${data.title.value}`] = {
-  //   name: `${data.title.value}`,
-  //   date: `${data.date.value}`,
-  //   url: `${data.url.value}`
-  // };
-  // let data = event.target.parent;
-  // console.log("From save click: ", $(".modal-body"));
-  // if ($(".modal-body")[0].className === "modal-body event") {
-  //     console.log("From save click--Event: ", data);
-  //     favoriteEvents[`${data.date.value}|${data.title.value}`] = {
-  //     name: `${data.title.value}`,
-  //     date: `${data.date.value}`,
-  //     url: `${data.url.value}`
-  //   };
-  //   localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
-  //   updateFavoriteEventsUI();
-  // } else {
-  //   let data = $("#modalLabel").html();
-  //   console.log("From save click--attractions: ", data);
-  //   favoriteAttractions[`${data}`] = {
-  //     name: `${data}`
-  //   };
-  //   localStorage.setItem("!Bored-Attractions", JSON.stringify(favoriteAttractions));
-  //   updateFavoriteAttractionsUI();
-  // }
+  if (data.list.value === "events") {
+      favoriteEvents[`${data.date.value}|${data.title.value}`] = {
+      name: `${data.title.value}`,
+      date: `${data.date.value}`,
+      url: `${data.url.value}`
+    };
+    localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
+    updateFavoriteEventsUI();
+  } else {
+    data = data.title.value;
+    favoriteAttractions[`${data}`] = {
+      name: `${data}`
+    };
+    localStorage.setItem("!Bored-Attractions", JSON.stringify(favoriteAttractions));
+    updateFavoriteAttractionsUI();
+  }
 
 })
 
