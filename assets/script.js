@@ -1,4 +1,4 @@
-// var myEvents;
+let favoriteEvents = {};
 var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
@@ -11,7 +11,13 @@ function limitCalendar(){
   $("#date").attr("min", today) 
 }
 
-limitCalendar()
+function initialize() {
+  limitCalendar();
+  if (localStorage.getItem("!Bored-Events") !== "undefined") {
+    favoriteEvents = {...JSON.parse(localStorage.getItem("!Bored-Events"))};
+    updateFavoriteEventsUI();
+  }
+}
 
 function getLocation() {
   // Make sure browser supports this feature
@@ -24,7 +30,6 @@ function getLocation() {
   }
 }
 
-// This will get called after getCurrentPosition()
 function showPosition(position) {
   // Grab coordinates from the given object
   var lat = position.coords.latitude;
@@ -32,7 +37,6 @@ function showPosition(position) {
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
   displayAttractions(getGeoHash(lat, lon))
-  displayCityName(lat,lon);
 }
 
 function getGeoHash(lat, lon) {
@@ -70,22 +74,32 @@ function getEvents(geoHash) {
       });
     }
 
-function updateEventsUI(data_arr){
-  $("#events").empty();
-
-  for (let i=0; i<10; i++) {
-    let newEvent = $("<li>")
-      .html(`<button class="ui icon button heart-button">
-      <i class="heart icon mr-3"></i>
-    </button><a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
-    $("#events").append(newEvent);
-  }
-    
-  
-}
-
+  function updateEventsUI(data_arr){
+    $("#events").empty();
+    data_arr.forEach((element, index) => {
+      let newEvent = $("<li>")
+        .attr("data", `${index}`)
+      let newEventBtn = $("<button>")
+        .attr({
+          "type": "button",
+          "class": "btn btn-info btn-sm eventChoices",
+          "data-container": "body",
+          "data-toggle": "modal",
+          "data-target": "#exampleModal",
+          "data-date": `${element.dates.start.localDate}`,
+          "data-url": `${element.url}`,
+          "data-title": `${element.name}`
+        })
+        .html(`${element.name}`);
+      newEvent
+        .append(newEventBtn)
+      $("#events")
+      .append(newEvent)
+    })
+} 
 
 //When current location is enabled on the browser
+
 function displayCityName(lat,lon) {
   let queryURL = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
@@ -97,16 +111,19 @@ function displayCityName(lat,lon) {
 }
 
 //Temparature conversion function
+
 function convertKtoF(tempInKelvin) {
   return ((tempInKelvin - 273.15) * 9) / 5 + 32;
 }
 
+//Updates 
 function updateWeek(date) {
   this.today = date;
   this.tomorrow = moment(date).add(7,'days').format("YYYY-MM-DD");
 }
 
 //Convert Unix format to Standard Date
+
 function convertUnixtoDate(unixformat) {
   var unixTimeStamp = unixformat;
   var timestampInMilliSeconds = unixTimeStamp*1000;
@@ -119,18 +136,48 @@ function convertUnixtoDate(unixformat) {
 }
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
-function getTempData(cityInput){
+
+function getTempData(cityInput,dateInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
   $.ajax({
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    weatherInfo(response);
+    var currDate = moment().format("YYYY-MM-DD");
+    var dateDiff = (Date.parse(dateInput) - Date.parse(currDate))/86400000;
+   var cityLat = response.coord.lat;
+   var cityLon = response.coord.lon;
+   dayForecast(cityLat,cityLon,dateDiff);
   })
 }
 
-// Function to display Weather Information 
-function weatherInfo(response)
+//Weather info based on date selected
+
+function dayForecast(cityLat,cityLon,dateDiff){
+let forecastQueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat="+cityLat+"&lon="+cityLon+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
+$.ajax({
+  method:"GET",
+  url:forecastQueryURL
+}).then(function(response){
+  console.log(response);
+  var imageSrc = " https://openweathermap.org/img/wn/"+response.daily[dateDiff].weather[0].icon+".png";
+  $("#weather-icon").attr("src",imageSrc);
+  $("#weather").html("Weather Conditions: "+ response.daily[dateDiff].weather[0].main);
+  $("#temp").html("Temparature: "+ (convertKtoF(response.daily[dateDiff].temp.day)).toFixed(2) + "&deg;F");
+  $("#wind").html("Wind Speed: "+response.daily[dateDiff].wind_speed+"MPH");
+  if(response.daily[dateDiff].weather[0].main === "Clear" || response.daily[dateDiff].weather[0].main === "Clouds"){
+    $("#recommendation").text("outdoor")
+  } else {
+    $("#recommendation").text("indoor")
+  }
+})
+}
+
+
+
+//Weather Info
+
+function WeatherInfo(response)
 {
   var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
@@ -188,14 +235,63 @@ function toTitleCase(str) {
   );
 }
 
+function updateFavoriteEventsUI() {
+    $("#fav-events").empty();
+    let keys = Object.keys(favoriteEvents);
+    console.log("from update Favorites UI", favoriteEvents);
+    if (keys) {
+      keys.forEach(element => {
+        let newFav = $("<li>").html(favoriteEvents[`${element}`].name);
+        $("#fav-events").append(newFav);
+      })
+    }
+}
+
 //Click Event Handler while searching for a specific location
+
 $("#submit").on("click",function(event){
   event.preventDefault();
   let cityInput = $("#location").val().toLowerCase().trim();
   getTempData(cityInput);
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
-  getEventsCityDate(cityInput)
+  getEventsCityDate(cityInput);
+  
+  }
 })
+
+//Click Event Handler on events
+$("#events").on("click",function(event){
+  if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
+    $(event.target).parent().attr("class", "btn btn-primary btn-sm");
+    let eventData = $(event.target).parent()[0].childNodes[0].dataset;
+    $("#modalLabel").html(eventData.title);
+    $(".modal-body").html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
+    $("#saveEvent")
+      .attr({
+        "title": eventData.title,
+        "date": eventData.date,
+        "url": eventData.url
+
+      })
+    }
+  })
+
+$("#saveEvent").on("click",function(event){
+  let data = event.target.attributes;
+  favoriteEvents[`${data.date.value}|${data.title.value}`] = {
+    name: `${data.title.value}`,
+    date: `${data.date.value}`,
+    url: `${data.url.value}`
+  };
+  localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
+  updateFavoriteEventsUI();
+})
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+})
+
+initialize();
 
 getLocation();
