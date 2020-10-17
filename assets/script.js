@@ -3,7 +3,7 @@ var today = moment().format("YYYY-MM-DD");
 var tomorrow = moment().add(7,'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
-var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
+var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "Go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
 function limitCalendar(){
@@ -31,9 +31,8 @@ function showPosition(position) {
   var lon = position.coords.longitude;
   console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
-  displayCityName(lat,lon);
   displayAttractions(getGeoHash(lat, lon))
-  getEvents1();
+  displayCityName(lat,lon);
 }
 
 function getGeoHash(lat, lon) {
@@ -76,7 +75,9 @@ function updateEventsUI(data_arr){
 
   for (let i=0; i<10; i++) {
     let newEvent = $("<li>")
-      .html(`<a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
+      .html(`<button class="ui icon button heart-button">
+      <i class="heart icon mr-3"></i>
+    </button><a href=${data_arr[i].url}>${data_arr[i].name}</a>`);
     $("#events").append(newEvent);
   }
     
@@ -91,8 +92,7 @@ function displayCityName(lat,lon) {
       url: queryURL,
       method:"GET"
   }).then(function(response){   
-    $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
-    WeatherInfo(response);
+      weatherInfo(response);
   })
 }
 
@@ -114,31 +114,30 @@ function convertUnixtoDate(unixformat) {
   var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
   var month = (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
   var year = date.getFullYear();
-  var formattedDate = year + '-' + month + '-' + day;
+  var formattedDate = day + '-' + month + '-' + year;
   return (formattedDate);
 }
 
 //When the current location is blocked on the browser, User Input is gathered from Text Box value
-function getTempData(cityInput,dateInput){
+function getTempData(cityInput){
   let TempapiURL = "https://api.openweathermap.org/data/2.5/weather?q="+cityInput+"&appid=fd8e3b4dd5f260d4ef1f4327d6e0279a";
-  $("#location-and-date").html(cityInput + "("+dateInput+")");
   $.ajax({
     method:"GET",
     url: TempapiURL
   }).then(function(response){
-    WeatherInfo(response);
+    weatherInfo(response);
   })
 }
 
-//Weather Info
-
-function WeatherInfo(response)
+// Function to display Weather Information 
+function weatherInfo(response)
 {
   var imageSrc = " https://openweathermap.org/img/wn/"+response.weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.weather[0].main);
   $("#temp").html("Temparature: "+ (convertKtoF(response.main.temp)).toFixed(2) + "&deg;F");
   $("#wind").html("Wind Speed: "+response.wind.speed+"MPH");
+  $("#location-and-date").html(response.name +"("+ convertUnixtoDate(response.dt)+")");
   if(response.weather[0].main === "Clear" || response.weather[0].main === "Clouds"){
     $("#recommendation").text("outdoor")
   } else {
@@ -161,19 +160,19 @@ function displayAttractions(city){
       $("#attractions").append(noAttraction)
       if ($("#recommendation").text()==="outdoor"){
         outdoorActivities.forEach(element => {
-        let outdoorActivityList = $("<li>").text(element)
+        let outdoorActivityList = $("<li>").html('<button class="ui icon button heart-button"><i class="heart icon mr-3"></i></button>' + element);
         $("#attractions").append(outdoorActivityList)
         })
       } else if ($("#recommendation").text()==="indoor"){
         indoorActivities.forEach(element => {
-        let indoorActivityList = $("<li>").text(element)
+        let indoorActivityList = $("<li>").html('<button class="ui icon button heart-button"><i class="heart icon mr-3"></i></button>' + element);
         $("#attractions").append(indoorActivityList)
         })
       }  
     } else {
       attractions.forEach(element => {
         let newAttraction = $("<li>")
-        newAttraction.text(element.name)
+        newAttraction.html('<button class="ui icon button heart-button"><i class="heart icon mr-3"></i></button>' + element.name);
         $("#attractions").append(newAttraction)
       })
     }
@@ -191,20 +190,12 @@ function toTitleCase(str) {
 
 //Click Event Handler while searching for a specific location
 $("#submit").on("click",function(event){
-  let cityInput = $("#location").val().toLowerCase().trim();
-  let dateInput = $("#date").val();
   event.preventDefault();
-  if(cityInput === "" || dateInput === "")
-  {
-    alert("Enter all the Required fields");
-  }
-  else
-  {
-  getTempData(cityInput,dateInput);
+  let cityInput = $("#location").val().toLowerCase().trim();
+  getTempData(cityInput);
   updateWeek($("#date").val());
   displayAttractions(toTitleCase(cityInput));
-  getEventsCityDate(cityInput);
-  }
+  getEventsCityDate(cityInput)
 })
 
 getLocation();
