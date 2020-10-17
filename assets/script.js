@@ -20,7 +20,7 @@ function initialize() {
   };
   if (localStorage.getItem("!Bored-Attractions") !== "undefined") {
     favoriteAttractions = {...JSON.parse(localStorage.getItem("!Bored-Attractions"))};
-    displayAttractions();
+    updateFavoriteAttractionsUI();
   }
 }
 
@@ -39,7 +39,6 @@ function showPosition(position) {
   // Grab coordinates from the given object
   var lat = position.coords.latitude;
   var lon = position.coords.longitude;
-  console.log("Your coordinates are Latitude: " + lat + " Longitude " + lon);
   getEvents(getGeoHash(lat, lon));
   displayCityName(lat,lon);
   displayAttractions(getGeoHash(lat, lon))
@@ -83,18 +82,17 @@ function getEvents(geoHash) {
   function updateAttractionsUI(data_arr){
     data_arr.forEach(element => {
       let newAttraction = $("<li>");
-      // newAttraction.text(element.name)
+      newAttraction.text(element.name)
       let newAttractionBtn = $("<button>")
         .attr({
           "type": "button",
-          "class": "btn btn-info btn-sm eventChoices",
+          "class": "btn btn-info btn-sm attractionChoices",
           "data-container": "body",
           "data-toggle": "modal",
           "data-target": "#exampleModal",
           "data-list": `attractions`,
           "data-title": `${element}`,
-          "data-url": "",
-          "data-title": ""
+          "data-url": ""
         })
         .html(`${element}`);
       newAttraction
@@ -192,7 +190,6 @@ $.ajax({
   method:"GET",
   url:forecastQueryURL
 }).then(function(response){
-  console.log(response);
   var imageSrc = " https://openweathermap.org/img/wn/"+response.daily[dateDiff].weather[0].icon+".png";
   $("#weather-icon").attr("src",imageSrc);
   $("#weather").html("Weather Conditions: "+ response.daily[dateDiff].weather[0].main);
@@ -245,7 +242,7 @@ function displayAttractions(city){
       attractionList = [];
       attractions.forEach(element => {
         attractionList.push(element.name);
-        console.log(element);
+        console.log(element.name);
       });
       updateAttractionsUI(attractionList);
     }
@@ -264,13 +261,23 @@ function toTitleCase(str) {
 function updateFavoriteEventsUI() {
     $("#fav-events").empty();
     let keys = Object.keys(favoriteEvents);
-    console.log("from update Favorites UI", favoriteEvents);
     if (keys) {
       keys.forEach(element => {
         let newFav = $("<li>").html(favoriteEvents[`${element}`].name);
         $("#fav-events").append(newFav);
       })
     }
+}
+
+function updateFavoriteAttractionsUI() {
+  $("#fav-attractions").empty();
+  let keys = Object.keys(favoriteAttractions);
+  if (keys) {
+    keys.forEach(element => {
+      let newFav = $("<li>").html(favoriteAttractions[`${element}`].name);
+      $("#fav-attractions").append(newFav);
+    })
+  }
 }
 
 //Click Event Handler while searching for a specific location
@@ -294,12 +301,14 @@ $("#submit").on("click",function(event){
 })
 
 //Click Event Handler on events
-$("#events").on("click",function(event){
+$("#attractions").on("click",function(event){
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
     $("#modalLabel").html(eventData.title);
-    $(".modal-body").html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
+    $(".modal-body")
+      .attr("class", "modal-body event")
+      .html(`${eventData.title}`)
     $("#saveEvent")
       .attr({
         "title": eventData.title,
@@ -310,15 +319,54 @@ $("#events").on("click",function(event){
     }
   })
 
-$("#saveEvent").on("click",function(event){
+//Click Event Handler on events
+$("#events").on("click",function(event){
+  if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
+    $(event.target).parent().attr("class", "btn btn-primary btn-sm");
+    let eventData = $(event.target).parent()[0].childNodes[0].dataset;
+    $("#modalLabel").html(eventData.title);
+    $(".modal-body")
+      .attr("class", "modal-body event")
+      .html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
+    $("#saveEvent")
+      .attr({
+        "title": eventData.title,
+        "date": eventData.date,
+        "url": eventData.url
+
+      })
+    }
+  })
+
+$("#save").on("click",function(event){
   let data = event.target.attributes;
-  favoriteEvents[`${data.date.value}|${data.title.value}`] = {
-    name: `${data.title.value}`,
-    date: `${data.date.value}`,
-    url: `${data.url.value}`
-  };
-  localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
-  updateFavoriteEventsUI();
+  console.log("from save", data)
+  // favoriteEvents[`${data.date.value}|${data.title.value}`] = {
+  //   name: `${data.title.value}`,
+  //   date: `${data.date.value}`,
+  //   url: `${data.url.value}`
+  // };
+  // let data = event.target.parent;
+  // console.log("From save click: ", $(".modal-body"));
+  // if ($(".modal-body")[0].className === "modal-body event") {
+  //     console.log("From save click--Event: ", data);
+  //     favoriteEvents[`${data.date.value}|${data.title.value}`] = {
+  //     name: `${data.title.value}`,
+  //     date: `${data.date.value}`,
+  //     url: `${data.url.value}`
+  //   };
+  //   localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
+  //   updateFavoriteEventsUI();
+  // } else {
+  //   let data = $("#modalLabel").html();
+  //   console.log("From save click--attractions: ", data);
+  //   favoriteAttractions[`${data}`] = {
+  //     name: `${data}`
+  //   };
+  //   localStorage.setItem("!Bored-Attractions", JSON.stringify(favoriteAttractions));
+  //   updateFavoriteAttractionsUI();
+  // }
+
 })
 
 $('#myModal').on('shown.bs.modal', function () {
@@ -326,5 +374,4 @@ $('#myModal').on('shown.bs.modal', function () {
 })
 
 initialize();
-
 getLocation();
