@@ -67,7 +67,6 @@ function getEvents(geoHash) {
       async:true,
       dataType: "json",
       success: function(json){
-        console.log("From getEventsCityDate", json);
         updateEventsUI([...json._embedded.events])
       },
       error: function(xhr, status, err) {
@@ -78,6 +77,7 @@ function getEvents(geoHash) {
 
   function updateEventsUI(data_arr){
     $("#events").empty();
+    data_arr = [...data_arr.slice(0,10)];
     data_arr.forEach((element, index) => {
       let newEvent = $("<li>")
         .attr("data", `${index}`)
