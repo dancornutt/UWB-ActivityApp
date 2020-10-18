@@ -47,8 +47,6 @@ function showPosition(position) {
   var lon = position.coords.longitude;
   getEvents(getGeoHash(lat, lon));
   displayCityName(lat, lon);
-  displayAttractions(getGeoHash(lat, lon))
-
 }
 
 function getGeoHash(lat, lon) {
@@ -143,6 +141,7 @@ function displayCityName(lat, lon) {
   }).then(function (response) {
     $("#location-and-date").html(response.name + "(" + convertUnixtoDate(response.dt) + ")");
     WeatherInfo(response);
+    displayAttractions(getGeoHash(lat, lon));
   })
 }
 
