@@ -68,7 +68,7 @@ function getEvents(geoHash) {
     async: true,
     dataType: "json",
     success: function (json) {
-      if ("_embedded.events" in json) {
+      if ("_embedded" in json) {
         updateEventsUI([...json._embedded.events]);
       } else {
         clearEventsUI("Sorry, unable to find events for location, please try a city search.")
@@ -87,7 +87,7 @@ function getEventsCityDate(city) {
     async: true,
     dataType: "json",
     success: function (json) {
-      if ("_embedded.events" in json) {
+      if ("_embedded" in json) {
         updateEventsUI([...json._embedded.events]);
       } else {
         clearEventsUI("Sorry, unable to find events for city search, please check name and try again.")
@@ -250,7 +250,6 @@ function displayAttractions(city) {
     $("#attractions").empty();
     let attractions = response.results
     if (attractions.length === 0) {
-      //TODO is the weather known here yet? I donno -Dan
       let noAttraction = $("<li>").text("No city attractions found at your location. Try one of these:")
       $("#attractions").append(noAttraction)
       if ($("#recommendation").text() === "outdoor") {
@@ -343,7 +342,6 @@ $("#attractions").on("click",function(event){
   event.preventDefault();
   console.log("from attractions click listener: ", $(event.target).parent().parent()[0].attributes[0].value !== undefined)
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
-    $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
     $("#modalLabel").html(eventData.title);
     $(".modal-body")
@@ -367,7 +365,6 @@ $("#events").on("click",function(event){
   console.log("from events click listener: ", $(event.target).parent().parent()[0].attributes[0].value !== undefined)
 
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
-    $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
     $("#modalLabel").html(eventData.title);
     $(".modal-body")
