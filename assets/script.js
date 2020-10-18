@@ -276,7 +276,6 @@ function updateFavoriteEventsUI() {
           })
         $("#fav-events").append(newFav);
       })
-    })
   }
 }
 
@@ -327,6 +326,7 @@ $("#submit").on("click",function(event){
 
 $("#attractions").on("click",function(event){
   event.preventDefault();
+  console.log("from attractions click listener: ", $(event.target).parent().parent()[0].attributes[0].value !== undefined)
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
@@ -349,6 +349,8 @@ $("#attractions").on("click",function(event){
 
 $("#events").on("click",function(event){
   event.preventDefault();
+  console.log("from events click listener: ", $(event.target).parent().parent()[0].attributes[0].value !== undefined)
+
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     $(event.target).parent().attr("class", "btn btn-primary btn-sm");
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
