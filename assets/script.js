@@ -340,7 +340,6 @@ $("#submit").on("click",function(event){
 
 $("#attractions").on("click",function(event){
   event.preventDefault();
-  console.log("from attractions click listener: ", $(event.target).parent().parent()[0].attributes[0].value !== undefined)
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
     $("#modalLabel").html(eventData.title);
@@ -362,14 +361,12 @@ $("#attractions").on("click",function(event){
 
 $("#events").on("click",function(event){
   event.preventDefault();
-  console.log("from events click listener: ", $(event.target).parent().parent()[0].attributes[0].value !== undefined)
-
   if ($(event.target).parent().parent()[0].attributes[0].value !== undefined) {
     let eventData = $(event.target).parent()[0].childNodes[0].dataset;
     $("#modalLabel").html(eventData.title);
     $(".modal-body")
       .attr("class", "modal-body event")
-      .html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> Event Link</a>`)
+      .html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> target="_blank" TicketMaster Link</a>`)
     $("#save")
       .attr({
         "title": eventData.title,
