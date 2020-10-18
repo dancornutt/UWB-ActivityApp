@@ -366,7 +366,7 @@ $("#events").on("click",function(event){
     $("#modalLabel").html(eventData.title);
     $(".modal-body")
       .attr("class", "modal-body event")
-      .html(`${eventData.title} on ${eventData.date} <a href=${eventData.url}> target="_blank" TicketMaster Link</a>`)
+      .html(`${eventData.title} on ${eventData.date} <a href=${eventData.url} target="_blank"> TicketMaster Link</a>`)
     $("#save")
       .attr({
         "title": eventData.title,
