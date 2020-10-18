@@ -7,6 +7,14 @@ var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
 var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "Go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
+function clearEventsUI(text) {
+  $("#events").empty();
+    let newEvent = $("<li>")
+      .html(text);
+    $("#events")
+      .append(newEvent)
+}
+
 function limitCalendar() {
   $("#date").attr("max", maxDay)
   $("#date").attr("min", today)
@@ -60,7 +68,11 @@ function getEvents(geoHash) {
     async: true,
     dataType: "json",
     success: function (json) {
-      updateEventsUI([...json._embedded.events])
+      if ("_embedded.events" in json) {
+        updateEventsUI([...json._embedded.events]);
+      } else {
+        clearEventsUI("Sorry, unable to find events for location, please try a city search.")
+      }
     },
     error: function (xhr, status, err) {
       console.log(err);
@@ -75,7 +87,11 @@ function getEventsCityDate(city) {
     async: true,
     dataType: "json",
     success: function (json) {
-      updateEventsUI([...json._embedded.events])
+      if ("_embedded.events" in json) {
+        updateEventsUI([...json._embedded.events]);
+      } else {
+        clearEventsUI("Sorry, unable to find events for city search, please check name and try again.")
+      };
     },
     error: function (xhr, status, err) {
       console.log(err);
