@@ -1,11 +1,14 @@
 let favoriteEvents = {};
 let favoriteAttractions = {};
 var today = moment().format("YYYY-MM-DD");
+var todayMonthFirst = moment().format("MM-DD-YYYY")
 var tomorrow = moment().add(7, 'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
+var maxDayMonthFirst = moment().add(6, 'd').format("MM-DD-YYYY")
 var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "Go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
+
 
 //updates the event list
 function clearEventsUI(text) {
@@ -20,7 +23,24 @@ function clearEventsUI(text) {
 function limitCalendar() {
   $("#date").attr("max", maxDay)
   $("#date").attr("min", today)
+  $("#date").keyup(function(){
+    let inputDate = ($('#date').val()).replace(/-/g, "");
+    let todayInteger = today.replace(/-/g, "")
+    var maxDayInteger = maxDay.replace(/-/g, "")
+
+    console.log(inputDate)
+    console.log(todayInteger)
+    console.log(maxDayInteger)
+    
+    if (inputDate<maxDayInteger & inputDate>=todayInteger){
+      document.getElementById("submit").disabled = false
+    }else {
+      document.getElementById("submit").disabled = true
+    }
+  })
 }
+
+
 
 //pulls favorite events and attractions from storage and shows on the page
 function initialize() {
