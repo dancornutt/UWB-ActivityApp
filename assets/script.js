@@ -27,11 +27,6 @@ function limitCalendar() {
     let inputDate = ($('#date').val()).replace(/-/g, "");
     let todayInteger = today.replace(/-/g, "")
     var maxDayInteger = maxDay.replace(/-/g, "")
-
-    console.log(inputDate)
-    console.log(todayInteger)
-    console.log(maxDayInteger)
-    
     if (inputDate<maxDayInteger & inputDate>=todayInteger){
       document.getElementById("submit").disabled = false
     }else {
