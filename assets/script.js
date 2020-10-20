@@ -2,7 +2,7 @@ let favoriteEvents = {};
 let favoriteAttractions = {};
 var today = moment().format("YYYY-MM-DD");
 var todayMonthFirst = moment().format("MM-DD-YYYY")
-var tomorrow = moment().add(7, 'days').format("YYYY-MM-DD");
+var eventsEndDay = moment().add(7, 'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
 var maxDayMonthFirst = moment().add(6, 'd').format("MM-DD-YYYY")
@@ -27,7 +27,7 @@ function limitCalendar() {
     let inputDate = ($('#date').val()).replace(/-/g, "");
     let todayInteger = today.replace(/-/g, "")
     var maxDayInteger = maxDay.replace(/-/g, "")
-    if (inputDate<maxDayInteger & inputDate>=todayInteger){
+    if (inputDate<maxDayInteger && inputDate>=todayInteger){
       document.getElementById("submit").disabled = false
     }else {
       document.getElementById("submit").disabled = true
@@ -87,7 +87,7 @@ function getGeoHash(lat, lon) {
 function getEvents(geoHash) {
   $.ajax({
     type: "GET",
-    url: `https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${tomorrow}T00:00:00Z&geoPoint=${geoHash}&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
+    url: `https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${eventsEndDay}T00:00:00Z&geoPoint=${geoHash}&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
     async: true,
     dataType: "json",
     success: function (json) {
@@ -107,7 +107,7 @@ function getEvents(geoHash) {
 function getEventsCityDate(city) {
   $.ajax({
     type: "GET",
-    url: `https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${tomorrow}T00:00:00Z&city=[${city}]&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
+    url: `https://app.ticketmaster.com/discovery/v2/events.json?startDateTime=${today}T00:00:00Z&endDateTime=${eventsEndDay}T00:00:00Z&city=[${city}]&apikey=Br1l7WKm6rF3XAHs0vPmEIZoapMi7p8A`,
     async: true,
     dataType: "json",
     success: function (json) {
@@ -131,7 +131,7 @@ function updateAttractionsUI(data_arr) {
     let newAttractionBtn = $("<button>")
       .attr({
         "type": "button",
-        "class": "btn btn-info btn-sm choices attractionChoices",
+        "class": "btn btn-info btn-sm choices",
         "data-container": "body",
         "data-toggle": "modal",
         "data-target": "#exampleModal",
@@ -156,7 +156,7 @@ function updateEventsUI(data_arr) {
     let newEventBtn = $("<button>")
       .attr({
         "type": "button",
-        "class": "btn btn-info btn-sm choices eventChoices",
+        "class": "btn btn-info btn-sm choices",
         "data-container": "body",
         "data-toggle": "modal",
         "data-target": "#exampleModal",
@@ -196,7 +196,7 @@ function convertKtoF(tempInKelvin) {
 //Updates 
 function updateWeek(date) {
   this.today = date;
-  this.tomorrow = moment(date).add(7, 'days').format("YYYY-MM-DD");
+  this.eventsEndDay = moment(date).add(7, 'days').format("YYYY-MM-DD");
 }
 
 //Convert Unix format to Standard Date
