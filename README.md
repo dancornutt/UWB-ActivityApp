@@ -48,3 +48,4 @@ Open Weather API used to pull current and forecasted weather data: https://openw
 Ticketmaster API used to pull event data: https://developer.ticketmaster.com/ 
 
 Triposo API used to pull location attractions: https://www.triposo.com/api/ 
+
