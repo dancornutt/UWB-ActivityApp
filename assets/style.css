@@ -33,7 +33,11 @@ h3{
     height: 100px !important;
 }
 
+<<<<<<< HEAD
 .attractionChoices, .eventChoices{
+=======
+.choices{
+>>>>>>> f8f06fcc06914ad39d7dc081a3617196a76e59e2
     margin: 5px;
     border-radius: 5px;
 }

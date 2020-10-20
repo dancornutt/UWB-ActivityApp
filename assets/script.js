@@ -1,12 +1,16 @@
 let favoriteEvents = {};
 let favoriteAttractions = {};
 var today = moment().format("YYYY-MM-DD");
+var todayMonthFirst = moment().format("MM-DD-YYYY")
 var tomorrow = moment().add(7, 'days').format("YYYY-MM-DD");
 var city = "";
 var maxDay = moment().add(6, 'd').format("YYYY-MM-DD")
+var maxDayMonthFirst = moment().add(6, 'd').format("MM-DD-YYYY")
 var outdoorActivities = ["Ride a bike", "Play hopscotch", "Climb a tree", "Have a picnic", "Fly a kite", "Go on a hike", "Draw with chalk", "Do tie-dye", "Play Frisbee", "Rollerskate"]
 var indoorActivities = ["Bake a cake", "Play rock paper scissors", "Build a fort", "Do a puzzle", "Read a book", "Set up a scavenger hunt", "Draw", "Do Yoga", "Watch a movie", "Play hide and seek"]
 
+
+//updates the event list
 function clearEventsUI(text) {
   $("#events").empty();
     let newEvent = $("<li>")
@@ -15,11 +19,25 @@ function clearEventsUI(text) {
       .append(newEvent)
 }
 
+//only allows the user to pick a date within 7 days
 function limitCalendar() {
   $("#date").attr("max", maxDay)
   $("#date").attr("min", today)
+  $("#date").keyup(function(){
+    let inputDate = ($('#date').val()).replace(/-/g, "");
+    let todayInteger = today.replace(/-/g, "")
+    var maxDayInteger = maxDay.replace(/-/g, "")
+    if (inputDate<maxDayInteger & inputDate>=todayInteger){
+      document.getElementById("submit").disabled = false
+    }else {
+      document.getElementById("submit").disabled = true
+    }
+  })
 }
 
+
+
+//pulls favorite events and attractions from storage and shows on the page
 function initialize() {
   limitCalendar();
   if (localStorage.getItem("!Bored-Events") !== "undefined") {
@@ -32,6 +50,7 @@ function initialize() {
   }
 }
 
+//grabs the user's geo-location
 function getLocation() {
   // Make sure browser supports this feature
   if (navigator.geolocation) {
@@ -39,6 +58,7 @@ function getLocation() {
     navigator.geolocation.getCurrentPosition(showPosition);
   }
   else {
+    //shows a modal window explaining the error
     $("#alertHeader").text("Geolocation is not supported by this browser.")
     $("#alertBody").text("Please search for your location using the provided form.")
     $("#alertModal").addClass("active")
@@ -49,6 +69,7 @@ function getLocation() {
   }
 }
 
+
 function showPosition(position) {
   // Grab coordinates from the given object
   var lat = position.coords.latitude;
@@ -57,10 +78,12 @@ function showPosition(position) {
   displayCityName(lat, lon);
 }
 
+//gets location name from coordinates
 function getGeoHash(lat, lon) {
   return Geohash.encode(lat, lon, 6)
 }
 
+//does and API call to Ticketmaster for events at current user location
 function getEvents(geoHash) {
   $.ajax({
     type: "GET",
@@ -80,6 +103,7 @@ function getEvents(geoHash) {
   });
 }
 
+//does and API call to Ticketmaster for events at selected date and location
 function getEventsCityDate(city) {
   $.ajax({
     type: "GET",
@@ -99,6 +123,7 @@ function getEventsCityDate(city) {
   });
 }
 
+//prints the attractions of the location to the page
 function updateAttractionsUI(data_arr) {
   data_arr.forEach(element => {
     let newAttraction = $("<li>");
@@ -106,7 +131,7 @@ function updateAttractionsUI(data_arr) {
     let newAttractionBtn = $("<button>")
       .attr({
         "type": "button",
-        "class": "btn btn-info btn-sm attractionChoices",
+        "class": "btn btn-info btn-sm choices attractionChoices",
         "data-container": "body",
         "data-toggle": "modal",
         "data-target": "#exampleModal",
@@ -121,6 +146,7 @@ function updateAttractionsUI(data_arr) {
   })
 }
 
+//prints the events of the location to the page
 function updateEventsUI(data_arr) {
   $("#events").empty();
   data_arr = [...data_arr.slice(0, 10)];
@@ -130,7 +156,7 @@ function updateEventsUI(data_arr) {
     let newEventBtn = $("<button>")
       .attr({
         "type": "button",
-        "class": "btn btn-info btn-sm eventChoices",
+        "class": "btn btn-info btn-sm choices eventChoices",
         "data-container": "body",
         "data-toggle": "modal",
         "data-target": "#exampleModal",
@@ -241,6 +267,7 @@ function WeatherInfo(response) {
   }
 }
 
+//pulls location attractions from Triposo. If none, uses indoor or outdoor activity arrays (dependent on weather conditions)
 function displayAttractions(city) {
   let attractionsQueryURL = "https://www.triposo.com/api/20200803/poi.json?tag_labels=sightseeing|tous|nightlife|cuisine|do&location_id=" + city + "&count=15&order_by=-score&fields=name,best_for,coordinates,score,id&account=BMUC2RQB&token=0moqmf7h8qna8hw3ijun6r9sdb8eqqow"
   $.ajax({
@@ -267,6 +294,7 @@ function displayAttractions(city) {
   })
 }
 
+//creates function to make strings title case
 function toTitleCase(str) {
   return str.replace(
     /\w\S*/g,
@@ -276,6 +304,7 @@ function toTitleCase(str) {
   );
 }
 
+//prints the favorite events to the page
 function updateFavoriteEventsUI() {
 
     $("#fav-events").empty();
@@ -292,7 +321,7 @@ function updateFavoriteEventsUI() {
       })
   }
 }
-
+//prints the favorite attractions to the page
 function updateFavoriteAttractionsUI() {
   $("#fav-attractions").empty();
   let keys = Object.keys(favoriteAttractions);
@@ -378,7 +407,7 @@ $("#events").on("click",function(event){
   }
 })
 
-
+//saves to the favorites list
 $("#save").on("click",function(event){
   event.preventDefault();
 
@@ -401,6 +430,7 @@ $("#save").on("click",function(event){
   }
 })
 
+//deletes favorited events when delete button clicked
 $("#fav-events").on("click", function(event){
   event.preventDefault();
   savedItem = $(event.target).parent().parent();
@@ -408,7 +438,7 @@ $("#fav-events").on("click", function(event){
   localStorage.setItem("!Bored-Events", JSON.stringify(favoriteEvents));
   updateFavoriteEventsUI();
 })
-
+//deletes favorited attractions when delete button clicked
 $("#fav-attractions").on("click", function(event){
   event.preventDefault();
   savedItem = $(event.target).parent().parent();
@@ -417,12 +447,13 @@ $("#fav-attractions").on("click", function(event){
   updateFavoriteAttractionsUI();
 })
 
+//shows modal window
 $('#myModal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
 })
 
 
-
+//counts the likes on the page
 var count = 0;
 var countButton = document.getElementById("like");
 var displayCount = document.getElementById("likes");
